@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from report_metrics import first_serve_percentage
+from serve_metrics import first_serve_percentage, first_serve_points_won, second_serve_points_won, num_double_faults, num_aces
 
 st.title("Report Generator")
 
@@ -39,8 +39,19 @@ if uploaded_file is not None:
     # Serving Profile
     st.header("Serving Profile")
     fs_pct = first_serve_percentage(df, player)
-    st.write(f"First Serve Percentage: {fs_pct:.1%}")
+    st.write(f"1st Serve Percentage: {fs_pct:.1%}")
+    
+    fs_points_won = first_serve_points_won(df, player)
+    st.write(f"1st Serve Points Won: {fs_points_won:.1%}")
 
+    ss_points_won = second_serve_points_won(df, player)
+    st.write(f"2nd Serve Points Won: {ss_points_won:.1%}")
+
+    # Double Faults and Aces
+    double_faults = num_double_faults(df, player)
+    aces = num_aces(df, player)
+    st.write(f"Double Faults: {double_faults}")
+    st.write(f"Aces: {aces}")
 
     # Returning Profile
 
