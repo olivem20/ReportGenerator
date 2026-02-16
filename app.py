@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from report_metrics import first_serve_percentage
 
 st.title("Report Generator")
 
@@ -33,15 +34,19 @@ if uploaded_file is not None:
     st.write(f"**Location:** {location}")
     st.write(f"**Date:** {date}")
 
-########### PLAYER DATA ###########
+    ########### PLAYER DATA ###########
 
-# Serving Profile
+    # Serving Profile
+    st.header("Serving Profile")
+    fs_pct = first_serve_percentage(df, player)
+    st.write(f"First Serve Percentage: {fs_pct:.1%}")
 
-# Returning Profile
 
-# Winner Profile
+    # Returning Profile
 
-# Error Profile
+    # Winner Profile
 
-# Pressure Points Profile
+    # Error Profile
+
+    # Pressure Points Profile
 
