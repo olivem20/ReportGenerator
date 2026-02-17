@@ -44,8 +44,8 @@ def num_aces(df: pd.DataFrame, player_name: str) -> float:
 ## SERVE PLACEMENENT FUNCTIONS ##
 
 def deuce_wide(df: pd.DataFrame, player_name: str) -> float:
-    base_score = df["Name"].str.split(" ").str[0]
-
+    base_score = df["Name"].astype(str).str.split(" ").str[0]
+    
     deuce_scores = [
         "0-0",
         "15-15",
@@ -57,19 +57,72 @@ def deuce_wide(df: pd.DataFrame, player_name: str) -> float:
         "15-40"
     ]
 
-    serves = base_score[
+    first_serves = df[
         (df["Server"] == player_name) &
-        (df["A1: 1st Serve Made?"] == "Yes") &
+        (base_score.isin(deuce_scores))
+    ]
+
+    first_serves_wide = df[
+        (df["Server"] == player_name) &
         (df["A2: 1st Serve Location"] == "Wide") &
         (base_score.isin(deuce_scores))
     ]
-    return int(len(serves))
+
+    return len(first_serves_wide) / len(first_serves)
 
 def deuce_body(df: pd.DataFrame, player_name: str) -> float:
-    return
+    base_score = df["Name"].astype(str).str.split(" ").str[0]
+    
+    deuce_scores = [
+        "0-0",
+        "15-15",
+        "30-30",
+        "40-40",
+        "30-0",
+        "0-30",
+        "40-15",
+        "15-40"
+    ]
+
+    first_serves = df[
+        (df["Server"] == player_name) &
+        (base_score.isin(deuce_scores))
+    ]
+
+    first_serves_body = df[
+        (df["Server"] == player_name) &
+        (df["A2: 1st Serve Location"] == "Body") &
+        (base_score.isin(deuce_scores))
+    ]
+
+    return len(first_serves_body) / len(first_serves)
 
 def deuce_t(df: pd.DataFrame, player_name: str) -> float:
-    return
+    base_score = df["Name"].astype(str).str.split(" ").str[0]
+    
+    deuce_scores = [
+        "0-0",
+        "15-15",
+        "30-30",
+        "40-40",
+        "30-0",
+        "0-30",
+        "40-15",
+        "15-40"
+    ]
+
+    first_serves = df[
+        (df["Server"] == player_name) &
+        (base_score.isin(deuce_scores))
+    ]
+
+    first_serves_t = df[
+        (df["Server"] == player_name) &
+        (df["A2: 1st Serve Location"] == "T") &
+        (base_score.isin(deuce_scores))
+    ]
+
+    return len(first_serves_t) / len(first_serves)
 
 def ad_wide(df: pd.DataFrame, player_name: str) -> float:
     return
