@@ -3,6 +3,9 @@ import pandas as pd
 from serve_metrics import first_serve_percentage, first_serve_points_won, second_serve_points_won, num_double_faults, num_aces
 from deuce_serve_placement import deuce_wide, deuce_body, deuce_t, deuce_body_win_pct, deuce_wide_win_pct, deuce_t_win_pct
 from ad_serve_placement import ad_wide, ad_body, ad_t, ad_body_win_pct, ad_wide_win_pct, ad_t_win_pct
+from group_bar_chart import grouped_percentage_bar_chart
+
+
 st.title("Report Generator")
 
 uploaded_file = st.file_uploader("Please upload Match CSV")
@@ -63,14 +66,6 @@ if uploaded_file is not None:
     deuce_t_win = deuce_t_win_pct(df, player)
     deuce_wide_win = deuce_wide_win_pct(df, player)
 
-    st.header("Deuce Locations")
-    st.write(f"1st Serve Deuce Wide: {deuce_wide_serves:.1%}")
-    st.write(f"1st Serve Deuce Wide Win %: {deuce_wide_win:.1%}")
-    st.write(f"1st Serve Deuce Body: {deuce_body_serves:.1%}")
-    st.write(f"1st Serve Deuce Body Win %: {deuce_body_win:.1%}")
-    st.write(f"1st Serve Deuce T: {deuce_t_serves:.1%}")
-    st.write(f"1st Serve Deuce T Win %: {deuce_t_win:.1%}")
-
     # Ad Serve Location
     ad_wide_serves = ad_wide(df, player)
     ad_body_serves = ad_body(df, player)
@@ -80,13 +75,53 @@ if uploaded_file is not None:
     ad_t_win = ad_t_win_pct(df, player)
     ad_wide_win = ad_wide_win_pct(df, player)
 
-    st.header("Ad Locations")
-    st.write(f"1st euce Ad Wide: {ad_wide_serves:.1%}")
-    st.write(f"1st Serve Ad Wide Win %: {ad_wide_win:.1%}")
-    st.write(f"1st Serve Ad Body: {ad_body_serves:.1%}")
-    st.write(f"1st Serve Ad Body Win %: {ad_body_win:.1%}")
-    st.write(f"1st Serve Ad T: {ad_t_serves:.1%}")
-    st.write(f"1st Serve Ad T Win %: {ad_t_win:.1%}")
+    # Deuce Chart
+    categories_deuce = ["Wide", "Body", "T"]
+    categories_ad = ["T", "Body", "Wide"]
+
+    usage_values = [
+        deuce_wide_serves,
+        deuce_body_serves,
+        deuce_t_serves
+    ]
+
+    win_values = [
+        deuce_wide_win,
+        deuce_body_win,
+        deuce_t_win
+    ]
+
+    fig = grouped_percentage_bar_chart(
+        categories_deuce,
+        usage_values,
+        win_values,
+        "Deuce Side: 1st Serve Placement"
+    )
+
+    st.pyplot(fig)
+
+    usage_values = [
+    ad_wide_serves,
+    ad_body_serves,
+    ad_t_serves
+    ]
+
+    win_values = [
+        ad_wide_win,
+        ad_body_win,
+        ad_t_win
+    ]
+
+    fig = grouped_percentage_bar_chart(
+        categories_ad,
+        usage_values,
+        win_values,
+        "Ad Side: 1st Serve Placement"
+    )
+
+    st.pyplot(fig)
+
+
 
     ###### Returning Profile ######
 
