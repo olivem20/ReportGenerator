@@ -19,7 +19,7 @@ ERROR_PIE_COLORS = [
 ]
 
 SERVE_COLORS = [
-    "#0b0f2a",  # navy
+    "#0016a7",  # navy
     "#18c3ff",  # light blue
 ]
 

@@ -1,12 +1,12 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-from serve_metrics import first_serve_percentage, first_serve_points_won, second_serve_points_won, num_double_faults, num_aces
+from serve_metrics import service_winners, first_serve_percentage, first_serve_points_won, second_serve_points_won, num_double_faults, num_aces
 from deuce_serve_placement import deuce_wide, deuce_body, deuce_t, deuce_body_win_pct, deuce_wide_win_pct, deuce_t_win_pct
 from ad_serve_placement import ad_wide, ad_body, ad_t, ad_body_win_pct, ad_wide_win_pct, ad_t_win_pct
 from group_bar_chart import grouped_percentage_bar_chart
-from return_metrics import return_percentage, first_return_pct, second_return_pct, return_errors, return_direction_usage, return_direction_win_pct
-from themes import WINNER_PIE_COLORS, ERROR_PIE_COLORS
+from return_metrics import return_percentage, first_return_pct, second_return_pct, first_return_errors, second_return_errors
+from themes import WINNER_PIE_COLORS, ERROR_PIE_COLORS, SERVE_COLORS
 
 st.title("Report Generator")
 
@@ -54,19 +54,15 @@ if uploaded_file is not None:
         ###### Serving Profile ######
         st.header("Serving Profile")
         fs_pct = first_serve_percentage(df, player)
-        st.write(f"1st Serve Percentage: {fs_pct:.1%}")
         
         fs_points_won = first_serve_points_won(df, player)
-        st.write(f"1st Serve Points Won: {fs_points_won:.1%}")
 
         ss_points_won = second_serve_points_won(df, player)
-        st.write(f"2nd Serve Points Won: {ss_points_won:.1%}")
 
         # Double Faults and Aces
         double_faults = num_double_faults(df, player)
         aces = num_aces(df, player)
-        st.write(f"Double Faults: {double_faults}")
-        st.write(f"Aces: {aces}")
+        service_winners_count = service_winners(df, player)
 
         # Deuce Serve Location
         deuce_wide_serves = deuce_wide(df, player)
@@ -86,35 +82,26 @@ if uploaded_file is not None:
         ad_t_win = ad_t_win_pct(df, player)
         ad_wide_win = ad_wide_win_pct(df, player)
 
+        ############## SERVE TABLE ##############
+        serve_metrics_table = pd.DataFrame(
+        [
+            {"Metric": "1st Serve %", "Value": f"{fs_pct:.1%}"},
+            {"Metric": "1st Serve Points Won %", "Value": f"{fs_points_won:.1%}"},
+            {"Metric": "2nd Serve Points Won %", "Value": f"{ss_points_won:.1%}"},
+            {"Metric": "Aces", "Value": int(aces)},
+            {"Metric": "Service Winners", "Value": int(aces)},
+            {"Metric": "Double Faults", "Value": int(double_faults)},
+        ]
+        )
+
         st.subheader("Serve Metrics")
-
-        left_metrics = pd.DataFrame(
-            [
-                {"Metric": "1st Serve %", "Value": f"{fs_pct:.1%}"},
-                {"Metric": "1st Serve Points Won %", "Value": f"{fs_points_won:.1%}"},
-                {"Metric": "Aces", "Value": int(aces)},
-            ]
+        st.dataframe(
+            serve_metrics_table,
+            use_container_width=True,
+            hide_index=True
         )
 
-        right_metrics = pd.DataFrame(
-            [
-                {"Metric": "2nd Serve Points Won %", "Value": f"{ss_points_won:.1%}"},
-                {"Metric": "Double Faults", "Value": int(double_faults)},
-            ]
-        )
-
-        col1, col2 = st.columns(2)
-
-        with col1:
-            st.table(left_metrics)
-
-        with col2:
-            st.table(right_metrics)
-
-
-
-
-        # Deuce Chart
+        ############## DEUCE CHART ##############
         categories_deuce = ["Wide", "Body", "T"]
         categories_ad = ["T", "Body", "Wide"]
 
@@ -139,6 +126,8 @@ if uploaded_file is not None:
 
         st.pyplot(fig1)
 
+        ############## AD CHART ##############
+
         usage_values = [
         ad_wide_serves,
         ad_body_serves,
@@ -162,26 +151,40 @@ if uploaded_file is not None:
 
 
     with tab2:
+        ############## SERVE TABLE ##############
+        
 
         
         ###### Returning Profile ######
         st.header("Return Profile")
         # Return Points Won Percentage
         returns = return_percentage(df, player, opponent)
-        st.write(f"% Return Points Won: {returns:.1%}")
 
         # Return points won on 1st serve percentage
         first_returns = first_return_pct(df, player, opponent)
-        st.write(f"% 1st Serve Return Points Won: {first_returns:.1%}")
 
         # Return points won on 2nd serve percentage
         second_returns = second_return_pct(df, player, opponent)
-        st.write(f"% 2nd Serve Return Points Won: {second_returns:.1%}")
 
-        returnErrors = return_errors(df, player, opponent)
-        st.write(f"# Return Errors: {returnErrors}")
+        firstReturnErrors = first_return_errors(df, player, opponent)
+        secondReturnErrors = second_return_errors(df, player, opponent)
         
-        
+        return_metrics_table = pd.DataFrame(
+        [
+            {"Metric": "Return Points Won", "Value": f"{returns:.1%}"},
+            {"Metric": "1st Serve Return Points Won", "Value": f"{first_returns:.1%}"},
+            {"Metric": "2nd Serve Return Points Won", "Value": f"{second_returns:.1%}"},
+            {"Metric": "1st Serve Returns Missed", "Value": int(firstReturnErrors)},
+            {"Metric": "2nd Serve Returns Missed", "Value": int(secondReturnErrors)},
+        ]
+        )
+
+        st.subheader("Return Metrics")
+        st.dataframe(
+            return_metrics_table,
+            use_container_width=True,
+            hide_index=True
+        )
         # Return direction profile, usage and win percenrage for each return
         # %  of offensive returns, win % of offensice returns
         # pressure point returns
