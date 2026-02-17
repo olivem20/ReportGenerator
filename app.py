@@ -1,7 +1,8 @@
 import streamlit as st
 import pandas as pd
-from serve_metrics import first_serve_percentage, first_serve_points_won, second_serve_points_won, num_double_faults, num_aces, deuce_wide, deuce_body, deuce_t
-
+from serve_metrics import first_serve_percentage, first_serve_points_won, second_serve_points_won, num_double_faults, num_aces
+from deuce_serve_placement import deuce_wide, deuce_body, deuce_t, deuce_body_win_pct, deuce_wide_win_pct, deuce_t_win_pct
+from ad_serve_placement import ad_wide, ad_body, ad_t, ad_body_win_pct, ad_wide_win_pct, ad_t_win_pct
 st.title("Report Generator")
 
 uploaded_file = st.file_uploader("Please upload Match CSV")
@@ -53,15 +54,39 @@ if uploaded_file is not None:
     st.write(f"Double Faults: {double_faults}")
     st.write(f"Aces: {aces}")
 
-    # Serve Location
+    # Deuce Serve Location
     deuce_wide_serves = deuce_wide(df, player)
     deuce_body_serves = deuce_body(df, player)
     deuce_t_serves = deuce_t(df, player)
 
-    st.header("Serve Locations")
+    deuce_body_win = deuce_body_win_pct(df, player)
+    deuce_t_win = deuce_t_win_pct(df, player)
+    deuce_wide_win = deuce_wide_win_pct(df, player)
+
+    st.header("Deuce Locations")
     st.write(f"1st Serve Deuce Wide: {deuce_wide_serves:.1%}")
+    st.write(f"1st Serve Deuce Wide Win %: {deuce_wide_win:.1%}")
     st.write(f"1st Serve Deuce Body: {deuce_body_serves:.1%}")
+    st.write(f"1st Serve Deuce Body Win %: {deuce_body_win:.1%}")
     st.write(f"1st Serve Deuce T: {deuce_t_serves:.1%}")
+    st.write(f"1st Serve Deuce T Win %: {deuce_t_win:.1%}")
+
+    # Ad Serve Location
+    ad_wide_serves = ad_wide(df, player)
+    ad_body_serves = ad_body(df, player)
+    ad_t_serves = ad_t(df, player)
+
+    ad_body_win = ad_body_win_pct(df, player)
+    ad_t_win = ad_t_win_pct(df, player)
+    ad_wide_win = ad_wide_win_pct(df, player)
+
+    st.header("Ad Locations")
+    st.write(f"1st euce Ad Wide: {ad_wide_serves:.1%}")
+    st.write(f"1st Serve Ad Wide Win %: {ad_wide_win:.1%}")
+    st.write(f"1st Serve Ad Body: {ad_body_serves:.1%}")
+    st.write(f"1st Serve Ad Body Win %: {ad_body_win:.1%}")
+    st.write(f"1st Serve Ad T: {ad_t_serves:.1%}")
+    st.write(f"1st Serve Ad T Win %: {ad_t_win:.1%}")
 
     ###### Returning Profile ######
 
