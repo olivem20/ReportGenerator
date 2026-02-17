@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from serve_metrics import first_serve_percentage, first_serve_points_won, second_serve_points_won, num_double_faults, num_aces
+from serve_metrics import first_serve_percentage, first_serve_points_won, second_serve_points_won, num_double_faults, num_aces, deuce_wide
 
 st.title("Report Generator")
 
@@ -36,7 +36,7 @@ if uploaded_file is not None:
 
     ########### PLAYER DATA ###########
 
-    # Serving Profile
+    ###### Serving Profile ######
     st.header("Serving Profile")
     fs_pct = first_serve_percentage(df, player)
     st.write(f"1st Serve Percentage: {fs_pct:.1%}")
@@ -53,11 +53,16 @@ if uploaded_file is not None:
     st.write(f"Double Faults: {double_faults}")
     st.write(f"Aces: {aces}")
 
-    # Returning Profile
+    # Serve Location
+    deuce_wide_serves = deuce_wide(df, player)
+    st.header("Serve Locations")
+    st.write(f"Number of Wide Serves on Deuce Side: {deuce_wide_serves}")
 
-    # Winner Profile
+    ###### Returning Profile ######
 
-    # Error Profile
+    ###### Winner Profile ######
 
-    # Pressure Points Profile
+    ###### Error Profile ######
+
+    ###### Pressure Points Profile ######
 

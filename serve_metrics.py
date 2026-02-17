@@ -40,3 +40,42 @@ def num_aces(df: pd.DataFrame, player_name: str) -> float:
         (df["D1: Winner Type"] == "Winner")
     ]
     return len(serves)
+
+## SERVE PLACEMENENT FUNCTIONS ##
+
+def deuce_wide(df: pd.DataFrame, player_name: str) -> float:
+    base_score = df["Name"].str.split(" ").str[0]
+
+    deuce_scores = [
+        "0-0",
+        "15-15",
+        "30-30",
+        "40-40",
+        "30-0",
+        "0-30",
+        "40-15",
+        "15-40"
+    ]
+
+    serves = base_score[
+        (df["Server"] == player_name) &
+        (df["A1: 1st Serve Made?"] == "Yes") &
+        (df["A2: 1st Serve Location"] == "Wide") &
+        (base_score.isin(deuce_scores))
+    ]
+    return int(len(serves))
+
+def deuce_body(df: pd.DataFrame, player_name: str) -> float:
+    return
+
+def deuce_t(df: pd.DataFrame, player_name: str) -> float:
+    return
+
+def ad_wide(df: pd.DataFrame, player_name: str) -> float:
+    return
+
+def ad_body(df: pd.DataFrame, player_name: str) -> float:
+    return
+
+def ad_t(df: pd.DataFrame, player_name: str) -> float:
+    return
