@@ -94,7 +94,7 @@ def ad_t(df: pd.DataFrame, player_name: str) -> float:
 
 ################## WIN PCT ##################
 
-def deuce_body_win_pct(df: pd.DataFrame, player_name: str) -> float:
+def deuce_body_win_pct(df: pd.DataFrame, player_name: str, first_serve: str) -> float:
     base_score = df["Name"].astype(str).str.split(" ").str[0]
 
     deuce_scores = [
@@ -110,7 +110,7 @@ def deuce_body_win_pct(df: pd.DataFrame, player_name: str) -> float:
 
     serves_body = df[
         (df["Server"] == player_name) &
-        (df["A1: 1st Serve Made?"] == "Yes") &
+        (df["A1: 1st Serve Made?"] == first_serve) &
         (df["A2: 1st Serve Location"] == "Body") &
         (base_score.isin(deuce_scores))
     ]
@@ -123,7 +123,7 @@ def deuce_body_win_pct(df: pd.DataFrame, player_name: str) -> float:
 
     return won / total
 
-def deuce_t_win_pct(df: pd.DataFrame, player_name: str) -> float:
+def deuce_t_win_pct(df: pd.DataFrame, player_name: str, first_serve: str) -> float:
     base_score = df["Name"].astype(str).str.split(" ").str[0]
 
     deuce_scores = [
@@ -139,7 +139,7 @@ def deuce_t_win_pct(df: pd.DataFrame, player_name: str) -> float:
 
     serves_body = df[
         (df["Server"] == player_name) &
-        (df["A1: 1st Serve Made?"] == "Yes") &
+        (df["A1: 1st Serve Made?"] == first_serve) &
         (df["A2: 1st Serve Location"] == "T") &
         (base_score.isin(deuce_scores))
     ]
@@ -152,7 +152,7 @@ def deuce_t_win_pct(df: pd.DataFrame, player_name: str) -> float:
 
     return won / total
 
-def deuce_wide_win_pct(df: pd.DataFrame, player_name: str) -> float:
+def deuce_wide_win_pct(df: pd.DataFrame, player_name: str, first_serve: str) -> float:
     base_score = df["Name"].astype(str).str.split(" ").str[0]
 
     deuce_scores = [
@@ -168,7 +168,7 @@ def deuce_wide_win_pct(df: pd.DataFrame, player_name: str) -> float:
 
     serves_body = df[
         (df["Server"] == player_name) &
-        (df["A1: 1st Serve Made?"] == "Yes") &
+        (df["A1: 1st Serve Made?"] == first_serve) &
         (df["A2: 1st Serve Location"] == "Wide") &
         (base_score.isin(deuce_scores))
     ]
