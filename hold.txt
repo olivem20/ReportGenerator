@@ -1,0 +1,260 @@
+        ############## DEUCE CHART ##############
+        with row1[0]:
+            usage_values = [
+                deuce_wide_serves,
+                deuce_body_serves,
+                deuce_t_serves
+            ]
+
+            win_values = [
+                first_deuce_wide_win,
+                first_deuce_body_win,
+                first_deuce_t_win
+            ]
+
+            # Create DataFrame
+            # Convert to percentage (0–100)
+            usage_values = [v * 100 for v in usage_values]
+            win_values = [v * 100 for v in win_values]
+
+            df_deuce = pd.DataFrame({
+                "Placement": categories_deuce,
+                "Usage %": usage_values,
+                "Win %": win_values
+            })
+
+            # Melt for grouped bars
+            df_deuce = df_deuce.melt(
+                id_vars="Placement",
+                var_name="Metric",
+                value_name="Percent"
+            )
+
+            # Base chart
+            base = alt.Chart(df_deuce).encode(
+                x=alt.X("Placement:N", axis=alt.Axis(labelAngle=0), scale=alt.Scale(domain=categories_deuce)),
+                xOffset="Metric:N",
+                color="Metric:N"
+            )
+
+            # Bars
+            bars = base.mark_bar().encode(
+                y=alt.Y(
+                    "Percent:Q",
+                    axis=alt.Axis(format=".0f"),
+                    scale=alt.Scale(domain=[0, 100])
+                )
+            )
+
+            # Text labels
+            text = base.mark_text(
+                dy=-5,                 # moves text above bar
+                fontSize=12,
+                fontWeight="bold"
+            ).encode(
+                y="Percent:Q",
+                text=alt.Text("Percent:Q", format=".0f")  # shows whole number
+            )
+
+            # Combine
+            chart = (bars + text).properties(
+                title="Deuce Side: 1st Serve Placement"
+            )
+
+            st.altair_chart(chart, use_container_width=True)
+
+
+        ############## AD CHART #############
+        with row1[1]:
+            usage_values = [
+                ad_t_serves,
+                ad_body_serves,
+                ad_wide_serves
+            ]
+ 
+            win_values = [
+                first_ad_wide_win,
+                first_ad_body_win,
+                first_ad_t_win
+            ]
+
+            # Create DataFrame
+            # Convert to percentage (0–100)
+            usage_values = [v * 100 for v in usage_values]
+            win_values = [v * 100 for v in win_values]
+
+            df_ad = pd.DataFrame({
+                "Placement": categories_ad,
+                "Usage %": usage_values,
+                "Win %": win_values
+            })
+
+            # Melt for grouped bars
+            df_ad = df_ad.melt(
+                id_vars="Placement",
+                var_name="Metric",
+                value_name="Percent"
+            )
+
+            # Base chart
+            base = alt.Chart(df_ad).encode(
+                x=alt.X("Placement:N", axis=alt.Axis(labelAngle=0), scale=alt.Scale(domain=categories_ad)),
+                xOffset="Metric:N",
+                color="Metric:N"
+            )
+
+            # Bars
+            bars = base.mark_bar().encode(
+                y=alt.Y(
+                    "Percent:Q",
+                    axis=alt.Axis(format=".0f"),
+                    scale=alt.Scale(domain=[0, 100])
+                )
+            )
+
+            # Text labels
+            text = base.mark_text(
+                dy=-5,                 # moves text above bar
+                fontSize=12,
+                fontWeight="bold"
+            ).encode(
+                y="Percent:Q",
+                text=alt.Text("Percent:Q", format=".0f")  # shows whole number
+            )
+
+            # Combine
+            chart = (bars + text).properties(
+                title="Ad Side: 1st Serve Placement"
+            )
+
+            st.altair_chart(chart, use_container_width=True)
+
+        with row2[0]:
+            usage_values = [
+                deuce_wide_serves,
+                deuce_body_serves,
+                deuce_t_serves
+            ]
+
+            win_values = [
+                second_deuce_wide_win,
+                second_deuce_body_win,
+                second_deuce_t_win
+            ]
+
+            # Create DataFrame
+            # Convert to percentage (0–100)
+            usage_values = [v * 100 for v in usage_values]
+            win_values = [v * 100 for v in win_values]
+
+            df_deuce = pd.DataFrame({
+                "Placement": categories_deuce,
+                "Usage %": usage_values,
+                "Win %": win_values
+            })
+
+            # Melt for grouped bars
+            df_deuce = df_deuce.melt(
+                id_vars="Placement",
+                var_name="Metric",
+                value_name="Percent"
+            )
+
+            # Base chart
+            base = alt.Chart(df_deuce).encode(
+                x=alt.X("Placement:N", axis=alt.Axis(labelAngle=0), scale=alt.Scale(domain=categories_deuce)),
+                xOffset="Metric:N",
+                color="Metric:N"
+            )
+
+            # Bars
+            bars = base.mark_bar().encode(
+                y=alt.Y(
+                    "Percent:Q",
+                    axis=alt.Axis(format=".0f"),
+                    scale=alt.Scale(domain=[0, 100])
+                )
+            )
+
+            # Text labels
+            text = base.mark_text(
+                dy=-5,                 # moves text above bar
+                fontSize=12,
+                fontWeight="bold"
+            ).encode(
+                y="Percent:Q",
+                text=alt.Text("Percent:Q", format=".0f")  # shows whole number
+            )
+
+            # Combine
+            chart = (bars + text).properties(
+                title="Deuce Side: 2nd Serve Placement"
+            )
+
+            st.altair_chart(chart, use_container_width=True)
+
+        with row2[1]:
+            usage_values = [
+                ad_wide_serves,
+                ad_body_serves,
+                ad_t_serves
+            ]
+
+            win_values = [
+                second_ad_wide_win,
+                second_ad_body_win,
+                second_ad_t_win
+            ]
+
+            # Create DataFrame
+            # Convert to percentage (0–100)
+            usage_values = [v * 100 for v in usage_values]
+            win_values = [v * 100 for v in win_values]
+
+            df_deuce = pd.DataFrame({
+                "Placement": categories_deuce,
+                "Usage %": usage_values,
+                "Win %": win_values
+            })
+
+            # Melt for grouped bars
+            df_deuce = df_deuce.melt(
+                id_vars="Placement",
+                var_name="Metric",
+                value_name="Percent"
+            )
+
+            # Base chart
+            base = alt.Chart(df_deuce).encode(
+                x=alt.X("Placement:N", axis=alt.Axis(labelAngle=0), scale=alt.Scale(domain=categories_ad)),
+                xOffset="Metric:N",
+                color="Metric:N"
+            )
+
+            # Bars
+            bars = base.mark_bar().encode(
+                y=alt.Y(
+                    "Percent:Q",
+                    axis=alt.Axis(format=".0f"),
+                    scale=alt.Scale(domain=[0, 100])
+                )
+            )
+
+            # Text labels
+            text = base.mark_text(
+                dy=-5,                 # moves text above bar
+                fontSize=12,
+                fontWeight="bold"
+            ).encode(
+                y="Percent:Q",
+                text=alt.Text("Percent:Q", format=".0f")  # shows whole number
+            )
+
+            # Combine
+            chart = (bars + text).properties(
+                title="Ad Side: 2nd Serve Placement"
+            )
+
+            st.altair_chart(chart, use_container_width=True)
+
+

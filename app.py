@@ -1,11 +1,13 @@
+import os
+from PIL import Image, ImageDraw, ImageFont
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import altair as alt
 import plotly.express as px
-from serve_metrics import service_winners, first_serve_percentage, first_serve_points_won, second_serve_points_won, num_double_faults, num_aces
+from serve_metrics import service_winners, first_serve_percentage, second_serve_percentage, first_serve_points_won, second_serve_points_won, num_double_faults, num_aces
 from deuce_serve_placement import deuce_wide, deuce_body, deuce_t, deuce_body_win_pct, deuce_wide_win_pct, deuce_t_win_pct
-from ad_serve_placement import ad_wide, ad_body, ad_t, ad_body_win_pct, ad_wide_win_pct, ad_t_win_pct
+from ad_serve_placement import ad_serves, ad_serves_win_pct
 from group_bar_chart import grouped_percentage_bar_chart
 from return_metrics import return_percentage, first_return_pct, second_return_pct, first_return_errors, second_return_errors
 from themes import WINNER_PIE_COLORS, ERROR_PIE_COLORS, SERVE_COLORS
@@ -28,26 +30,39 @@ if uploaded_file is not None:
     location = match_info["Location"]
     date = match_info["Date"]
 
-    # Match Winner
-    winner_col = "C1: Who Won Point?"
+    player_first_name = player.split()[0]
+    player_png = f"{player_first_name}.png"
+    image_path = os.path.join("Headhsots", player_png) 
+
+    # Match Winner  
+    winner_col = "C1: Who Won Point?" 
     match_winner = df[winner_col].dropna().iloc[-1]
 
-    ### WRITE INFO ###
-    st.title(f"Match Winner: {match_winner}")
-    st.subheader(f"**Final Score:** {final_score}")
+    col1, col2, col3, col4, col5, col6 = st.columns([1,1,3,2,1,1], gap="xxsmall")
+    with col4:
+            if os.path.exists(image_path):
+                st.image(image_path, use_container_width=True)
+            else:
+                st.write("Headshot not found")
+    with col3:
+        ### WRITE INFO ###  
+        st.title(f"***Match Winner:*** {match_winner}", text_alignment="center")
+        st.markdown(f"## ***Final Score:*** {final_score}")
+        st.markdown(f"## ***Player:*** {player}")
+        st.markdown(f"## ***Opponent:*** {opponent}")
+        st.markdown(f"## ***Opponent School:*** {opponent_school}")
+        st.markdown(f"## ***Location:*** {location}")
+        st.markdown(f"## ***Date:*** {date}")
 
-    st.write(f"**Player:** {player}")
-    st.write(f"**Opponent:** {opponent}")
-    st.write(f"**Opponent School:** {opponent_school}")
-    st.write(f"**Location:** {location}")
-    st.write(f"**Date:** {date}")
 
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
         "Serve Profile",
         "Return Profile",
         "Winners",
         "Errors",
-        "Pressure"
+        "Pressure",
+        "Opponent Stats"
     ])
 
     with tab1:
@@ -57,6 +72,7 @@ if uploaded_file is not None:
         ###### Serving Profile ######
         st.header("Serving Profile")
         fs_pct = first_serve_percentage(df, player)
+        ss_pct = second_serve_percentage(df, player)
         
         fs_points_won = first_serve_points_won(df, player)
 
@@ -67,40 +83,26 @@ if uploaded_file is not None:
         aces = num_aces(df, player)
         service_winners_count = service_winners(df, player)
 
-        # Deuce Serve Location
-        deuce_wide_serves = deuce_wide(df, player)
-        deuce_body_serves = deuce_body(df, player)
-        deuce_t_serves = deuce_t(df, player)
-
-        first_deuce_body_win = deuce_body_win_pct(df, player, "Yes")
-        first_deuce_t_win = deuce_t_win_pct(df, player, "Yes")
-        first_deuce_wide_win = deuce_wide_win_pct(df, player, "Yes")
-
-        second_deuce_body_win = deuce_body_win_pct(df, player, "No")
-        second_deuce_t_win = deuce_t_win_pct(df, player, "No")
-        second_deuce_wide_win = deuce_wide_win_pct(df, player, "No")
-
-        # Ad Serve Location
-
-        ad_wide_serves = ad_wide(df, player)
-        ad_body_serves = ad_body(df, player)
-        ad_t_serves = ad_t(df, player)
-
-        first_ad_body_win = ad_body_win_pct(df, player, "Yes")
-        first_ad_t_win = ad_t_win_pct(df, player, "Yes")
-        first_ad_wide_win = ad_wide_win_pct(df, player, "Yes")
-
-        second_ad_body_win = ad_body_win_pct(df, player, "No")
-        second_ad_t_win = ad_t_win_pct(df, player, "No")
-        second_ad_wide_win = ad_wide_win_pct(df, player, "No")
+        ######## SERVE CHART STATS ########
+        ad_wide_1st = ad_serves(df, player, "Yes", "Wide")
+        ad_wide_1st_win_pct = ad_serves_win_pct(df, player, "Yes", "Wide")
+        ad_wide_2nd = ad_serves(df, player, "No", "Wide")
         
+        ad_body_1st = ad_serves(df, player, "Yes", "Body")
+        ad_body_1st_win_pct = ad_serves_win_pct(df, player, "Yes", "Body")
+        ad_body_2nd = ad_serves(df, player, "No", "Body")
         
-        col1, col2, col3 = st.columns(3)
+        ad_t_1st = ad_serves(df, player, "Yes", "T")
+        ad_t_1st_win_pct = ad_serves_win_pct(df, player, "Yes", "T")
+        ad_t_2nd = ad_serves(df, player, "No", "T")
+        
+        col1, col2, col3 = st.columns([2,1,1])
         ############## SERVE TABLE ##############
         with col1:
             serve_metrics_table = pd.DataFrame(
             [
                 {"Metric": "1st Serve %", "Value": f"{fs_pct:.1%}"},
+                {"Metric": "2nd Serve %", "Value": f"{ss_pct:.1%}"},
                 {"Metric": "1st Serve Points Won %", "Value": f"{fs_points_won:.1%}"},
                 {"Metric": "2nd Serve Points Won %", "Value": f"{ss_points_won:.1%}"},
                 {"Metric": "Aces", "Value": int(aces)},
@@ -112,275 +114,54 @@ if uploaded_file is not None:
             st.subheader("Serve Metrics")
             st.dataframe(
                 serve_metrics_table,
-                use_container_width=True,
+                width="stretch",
                 hide_index=True
             )
+
+        ################ SERVE PLACEMENT ################
+
+        img = Image.open("serve_placement.png").convert("RGBA")
+        draw = ImageDraw.Draw(img)
+
+        # If you have a .ttf font file, use it; otherwise PIL default
+        font = ImageFont.truetype(r"C:\Windows\Fonts\segoeuib.ttf", 40)
+        #font = ImageFont.load_default()
+
+        ########### AD ###########
+        draw.text((902, 299), f"{ad_wide_1st:.1%}", fill=(0,0,0,255), font=font) #USAGE %
+        draw.text((902, 430), f"{ad_wide_1st_win_pct:.1%}", fill=(0,0,0,255), font=font) #WIN %
+
+        draw.text((1155, 299), f"{ad_body_1st:.1%}", fill=(0,0,0,255), font=font) #USAGE %
+        draw.text((1155, 430), f"{ad_body_1st_win_pct:.1%}", fill=(0,0,0,255), font=font) #WIN %
+
+        draw.text((1413, 299), f"{ad_t_1st:.1%}", fill=(0,0,0,255), font=font) #USAGE %
+        draw.text((1413, 430), f"{ad_t_1st_win_pct:.1%}", fill=(0,0,0,255), font=font) #WIN %
+
+        ########### DEUCE ###########
+        #draw.text((902, 299), f"{ad_wide_1st:.1%}", fill=(0,0,0,255), font=font) #USAGE %
+        #draw.text((902, 430), f"42%", fill=(0,0,0,255), font=font) #WIN %
+
+        #draw.text((1155, 299), f"{ad_body_1st:.1%}", fill=(0,0,0,255), font=font) #USAGE %
+        #draw.text((1155, 430), f"42%", fill=(0,0,0,255), font=font) #WIN %
+
+       # draw.text((1415, 299), f"{ad_t_1st:.1%}", fill=(0,0,0,255), font=font) #USAGE %
+        #draw.text((1415, 430), f"42%", fill=(0,0,0,255), font=font) #WIN %
+
+
+
+        st.image(img, use_container_width=True)
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.write("PLACE HOLDER PUT IMAGE HERE")
+            
 
         row1 = st.columns(2)
         row2 = st.columns(2)
 
         categories_deuce = ["Wide", "Body", "T"]
         categories_ad = ["T", "Body", "Wide"]
-
-        ############## DEUCE CHART ##############
-        with row1[0]:
-            usage_values = [
-                deuce_wide_serves,
-                deuce_body_serves,
-                deuce_t_serves
-            ]
-
-            win_values = [
-                first_deuce_wide_win,
-                first_deuce_body_win,
-                first_deuce_t_win
-            ]
-
-            # Create DataFrame
-            # Convert to percentage (0–100)
-            usage_values = [v * 100 for v in usage_values]
-            win_values = [v * 100 for v in win_values]
-
-            df_deuce = pd.DataFrame({
-                "Placement": categories_deuce,
-                "Usage %": usage_values,
-                "Win %": win_values
-            })
-
-            # Melt for grouped bars
-            df_deuce = df_deuce.melt(
-                id_vars="Placement",
-                var_name="Metric",
-                value_name="Percent"
-            )
-
-            # Base chart
-            base = alt.Chart(df_deuce).encode(
-                x=alt.X("Placement:N", axis=alt.Axis(labelAngle=0), scale=alt.Scale(domain=categories_deuce)),
-                xOffset="Metric:N",
-                color="Metric:N"
-            )
-
-            # Bars
-            bars = base.mark_bar().encode(
-                y=alt.Y(
-                    "Percent:Q",
-                    axis=alt.Axis(format=".0f"),
-                    scale=alt.Scale(domain=[0, 100])
-                )
-            )
-
-            # Text labels
-            text = base.mark_text(
-                dy=-5,                 # moves text above bar
-                fontSize=12,
-                fontWeight="bold"
-            ).encode(
-                y="Percent:Q",
-                text=alt.Text("Percent:Q", format=".0f")  # shows whole number
-            )
-
-            # Combine
-            chart = (bars + text).properties(
-                title="Deuce Side: 1st Serve Placement"
-            )
-
-            st.altair_chart(chart, use_container_width=True)
-
-
-        ############## AD CHART #############
-        with row1[1]:
-            usage_values = [
-                ad_t_serves,
-                ad_body_serves,
-                ad_wide_serves
-            ]
- 
-            win_values = [
-                first_ad_wide_win,
-                first_ad_body_win,
-                first_ad_t_win
-            ]
-
-            # Create DataFrame
-            # Convert to percentage (0–100)
-            usage_values = [v * 100 for v in usage_values]
-            win_values = [v * 100 for v in win_values]
-
-            df_ad = pd.DataFrame({
-                "Placement": categories_ad,
-                "Usage %": usage_values,
-                "Win %": win_values
-            })
-
-            # Melt for grouped bars
-            df_ad = df_ad.melt(
-                id_vars="Placement",
-                var_name="Metric",
-                value_name="Percent"
-            )
-
-            # Base chart
-            base = alt.Chart(df_ad).encode(
-                x=alt.X("Placement:N", axis=alt.Axis(labelAngle=0), scale=alt.Scale(domain=categories_ad)),
-                xOffset="Metric:N",
-                color="Metric:N"
-            )
-
-            # Bars
-            bars = base.mark_bar().encode(
-                y=alt.Y(
-                    "Percent:Q",
-                    axis=alt.Axis(format=".0f"),
-                    scale=alt.Scale(domain=[0, 100])
-                )
-            )
-
-            # Text labels
-            text = base.mark_text(
-                dy=-5,                 # moves text above bar
-                fontSize=12,
-                fontWeight="bold"
-            ).encode(
-                y="Percent:Q",
-                text=alt.Text("Percent:Q", format=".0f")  # shows whole number
-            )
-
-            # Combine
-            chart = (bars + text).properties(
-                title="Ad Side: 1st Serve Placement"
-            )
-
-            st.altair_chart(chart, use_container_width=True)
-
-        with row2[0]:
-            usage_values = [
-                deuce_wide_serves,
-                deuce_body_serves,
-                deuce_t_serves
-            ]
-
-            win_values = [
-                second_deuce_wide_win,
-                second_deuce_body_win,
-                second_deuce_t_win
-            ]
-
-            # Create DataFrame
-            # Convert to percentage (0–100)
-            usage_values = [v * 100 for v in usage_values]
-            win_values = [v * 100 for v in win_values]
-
-            df_deuce = pd.DataFrame({
-                "Placement": categories_deuce,
-                "Usage %": usage_values,
-                "Win %": win_values
-            })
-
-            # Melt for grouped bars
-            df_deuce = df_deuce.melt(
-                id_vars="Placement",
-                var_name="Metric",
-                value_name="Percent"
-            )
-
-            # Base chart
-            base = alt.Chart(df_deuce).encode(
-                x=alt.X("Placement:N", axis=alt.Axis(labelAngle=0), scale=alt.Scale(domain=categories_deuce)),
-                xOffset="Metric:N",
-                color="Metric:N"
-            )
-
-            # Bars
-            bars = base.mark_bar().encode(
-                y=alt.Y(
-                    "Percent:Q",
-                    axis=alt.Axis(format=".0f"),
-                    scale=alt.Scale(domain=[0, 100])
-                )
-            )
-
-            # Text labels
-            text = base.mark_text(
-                dy=-5,                 # moves text above bar
-                fontSize=12,
-                fontWeight="bold"
-            ).encode(
-                y="Percent:Q",
-                text=alt.Text("Percent:Q", format=".0f")  # shows whole number
-            )
-
-            # Combine
-            chart = (bars + text).properties(
-                title="Deuce Side: 2nd Serve Placement"
-            )
-
-            st.altair_chart(chart, use_container_width=True)
-
-        with row2[1]:
-            usage_values = [
-                ad_wide_serves,
-                ad_body_serves,
-                ad_t_serves
-            ]
-
-            win_values = [
-                second_ad_wide_win,
-                second_ad_body_win,
-                second_ad_t_win
-            ]
-
-            # Create DataFrame
-            # Convert to percentage (0–100)
-            usage_values = [v * 100 for v in usage_values]
-            win_values = [v * 100 for v in win_values]
-
-            df_deuce = pd.DataFrame({
-                "Placement": categories_deuce,
-                "Usage %": usage_values,
-                "Win %": win_values
-            })
-
-            # Melt for grouped bars
-            df_deuce = df_deuce.melt(
-                id_vars="Placement",
-                var_name="Metric",
-                value_name="Percent"
-            )
-
-            # Base chart
-            base = alt.Chart(df_deuce).encode(
-                x=alt.X("Placement:N", axis=alt.Axis(labelAngle=0), scale=alt.Scale(domain=categories_ad)),
-                xOffset="Metric:N",
-                color="Metric:N"
-            )
-
-            # Bars
-            bars = base.mark_bar().encode(
-                y=alt.Y(
-                    "Percent:Q",
-                    axis=alt.Axis(format=".0f"),
-                    scale=alt.Scale(domain=[0, 100])
-                )
-            )
-
-            # Text labels
-            text = base.mark_text(
-                dy=-5,                 # moves text above bar
-                fontSize=12,
-                fontWeight="bold"
-            ).encode(
-                y="Percent:Q",
-                text=alt.Text("Percent:Q", format=".0f")  # shows whole number
-            )
-
-            # Combine
-            chart = (bars + text).properties(
-                title="Ad Side: 2nd Serve Placement"
-            )
-
-            st.altair_chart(chart, use_container_width=True)
-
 
 
     with tab2:

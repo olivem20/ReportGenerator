@@ -25,7 +25,7 @@ def deuce_wide(df: pd.DataFrame, player_name: str) -> float:
         (df["A2: 1st Serve Location"] == "Wide") &
         (base_score.isin(deuce_scores))
     ]
-
+    
     return len(first_serves_wide) / len(first_serves)
 
 def deuce_body(df: pd.DataFrame, player_name: str) -> float:
