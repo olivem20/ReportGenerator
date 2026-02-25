@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import altair as alt
 import plotly.express as px
 from serve_metrics import service_winners, first_serve_percentage, second_serve_percentage, first_serve_points_won, second_serve_points_won, num_double_faults, num_aces
-from deuce_serve_placement import deuce_wide, deuce_body, deuce_t, deuce_body_win_pct, deuce_wide_win_pct, deuce_t_win_pct
+from deuce_serve_placement import deuce_serves, deuce_serves_win_pct
 from ad_serve_placement import ad_serves, ad_serves_win_pct
 from group_bar_chart import grouped_percentage_bar_chart
 from return_metrics import return_percentage, first_return_pct, second_return_pct, first_return_errors, second_return_errors
@@ -83,19 +83,38 @@ if uploaded_file is not None:
         aces = num_aces(df, player)
         service_winners_count = service_winners(df, player)
 
-        ######## SERVE CHART STATS ########
+        ######## AD STATS ########
         ad_wide_1st = ad_serves(df, player, "Yes", "Wide")
         ad_wide_1st_win_pct = ad_serves_win_pct(df, player, "Yes", "Wide")
         ad_wide_2nd = ad_serves(df, player, "No", "Wide")
+        ad_wide_2nd_win_pct = deuce_serves_win_pct(df, player, "No", "Wide")
         
         ad_body_1st = ad_serves(df, player, "Yes", "Body")
         ad_body_1st_win_pct = ad_serves_win_pct(df, player, "Yes", "Body")
         ad_body_2nd = ad_serves(df, player, "No", "Body")
+        ad_body_2nd_win_pct = deuce_serves_win_pct(df, player, "No", "Body")
         
         ad_t_1st = ad_serves(df, player, "Yes", "T")
         ad_t_1st_win_pct = ad_serves_win_pct(df, player, "Yes", "T")
         ad_t_2nd = ad_serves(df, player, "No", "T")
+        ad_t_2nd_win_pct = ad_serves_win_pct(df, player, "No", "T")
+
+        ######## DEUCE STATS ########
+        deuce_wide_1st = deuce_serves(df, player, "Yes", "Wide")
+        deuce_wide_1st_win_pct = deuce_serves_win_pct(df, player, "Yes", "Wide")
+        deuce_wide_2nd = deuce_serves(df, player, "No", "Wide")
+        deuce_wide_2nd_win_pct = deuce_serves_win_pct(df, player, "No", "Wide")
         
+        deuce_body_1st = deuce_serves(df, player, "Yes", "Body")
+        deuce_body_1st_win_pct = deuce_serves_win_pct(df, player, "Yes", "Body")
+        deuce_body_2nd = deuce_serves(df, player, "No", "Body")
+        deuce_body_2nd_win_pct = deuce_serves_win_pct(df, player, "No", "Body")
+        
+        deuce_t_1st = deuce_serves(df, player, "Yes", "T")
+        deuce_t_1st_win_pct = deuce_serves_win_pct(df, player, "Yes", "T")
+        deuce_t_2nd = deuce_serves(df, player, "No", "T")
+        deuce_t_2nd_win_pct = deuce_serves_win_pct(df, player, "No", "T")
+
         col1, col2, col3 = st.columns([2,1,1])
         ############## SERVE TABLE ##############
         with col1:
@@ -120,49 +139,85 @@ if uploaded_file is not None:
 
         ################ SERVE PLACEMENT ################
 
-        img = Image.open("serve_placement.png").convert("RGBA")
-        draw = ImageDraw.Draw(img)
-
-        # If you have a .ttf font file, use it; otherwise PIL default
-        font = ImageFont.truetype(r"C:\Windows\Fonts\segoeuib.ttf", 40)
-        #font = ImageFont.load_default()
-
-        ########### AD ###########
-        draw.text((902, 299), f"{ad_wide_1st:.1%}", fill=(0,0,0,255), font=font) #USAGE %
-        draw.text((902, 430), f"{ad_wide_1st_win_pct:.1%}", fill=(0,0,0,255), font=font) #WIN %
-
-        draw.text((1155, 299), f"{ad_body_1st:.1%}", fill=(0,0,0,255), font=font) #USAGE %
-        draw.text((1155, 430), f"{ad_body_1st_win_pct:.1%}", fill=(0,0,0,255), font=font) #WIN %
-
-        draw.text((1413, 299), f"{ad_t_1st:.1%}", fill=(0,0,0,255), font=font) #USAGE %
-        draw.text((1413, 430), f"{ad_t_1st_win_pct:.1%}", fill=(0,0,0,255), font=font) #WIN %
-
-        ########### DEUCE ###########
-        #draw.text((902, 299), f"{ad_wide_1st:.1%}", fill=(0,0,0,255), font=font) #USAGE %
-        #draw.text((902, 430), f"42%", fill=(0,0,0,255), font=font) #WIN %
-
-        #draw.text((1155, 299), f"{ad_body_1st:.1%}", fill=(0,0,0,255), font=font) #USAGE %
-        #draw.text((1155, 430), f"42%", fill=(0,0,0,255), font=font) #WIN %
-
-       # draw.text((1415, 299), f"{ad_t_1st:.1%}", fill=(0,0,0,255), font=font) #USAGE %
-        #draw.text((1415, 430), f"42%", fill=(0,0,0,255), font=font) #WIN %
-
-
-
-        st.image(img, use_container_width=True)
 
         col1, col2 = st.columns(2)
 
         with col1:
-            st.write("PLACE HOLDER PUT IMAGE HERE")
-            
+            st.header("1st Serve Placement Chart")
+            img = Image.open("serve_placement.png").convert("RGBA")
+            draw = ImageDraw.Draw(img)
 
-        row1 = st.columns(2)
-        row2 = st.columns(2)
+            # If you have a .ttf font file, use it; otherwise PIL default
+            font = ImageFont.truetype(r"C:\Windows\Fonts\segoeuib.ttf", 40)
+            #font = ImageFont.load_default()
 
-        categories_deuce = ["Wide", "Body", "T"]
-        categories_ad = ["T", "Body", "Wide"]
+            ########### AD ###########
+            draw.text((902, 299), f"{ad_wide_1st:.1%}", fill=(0,0,0,255), font=font) #USAGE %
+            draw.text((902, 430), f"{ad_wide_1st_win_pct:.1%}", fill=(0,0,0,255), font=font) #WIN %
+            draw.text((875, 100), "Ad Wide", fill=(0,0,0,255), font=font) #LABEL
 
+            draw.text((1155, 299), f"{ad_body_1st:.1%}", fill=(0,0,0,255), font=font) #USAGE %
+            draw.text((1155, 430), f"{ad_body_1st_win_pct:.1%}", fill=(0,0,0,255), font=font) #WIN %
+            draw.text((1130, 100), "Ad Body", fill=(0,0,0,255), font=font) #LABEL
+
+            draw.text((1413, 299), f"{ad_t_1st:.1%}", fill=(0,0,0,255), font=font) #USAGE %
+            draw.text((1413, 430), f"{ad_t_1st_win_pct:.1%}", fill=(0,0,0,255), font=font) #WIN %
+            draw.text((1420, 100), "Ad T", fill=(0,0,0,255), font=font) #LABEL
+
+            ########### DEUCE ###########
+            draw.text((1660, 299), f"{deuce_t_1st:.1%}", fill=(0,0,0,255), font=font) #USAGE %
+            draw.text((1660, 430), f"{deuce_t_1st_win_pct:.1%}", fill=(0,0,0,255), font=font) #WIN %
+            draw.text((1640, 100), "Deuce T", fill=(0,0,0,255), font=font) #LABEL
+
+            draw.text((1915, 299), f"{deuce_body_1st:.1%}", fill=(0,0,0,255), font=font) #USAGE %
+            draw.text((1915, 430), f"{deuce_body_1st_win_pct:.1%}", fill=(0,0,0,255), font=font) #WIN %
+            draw.text((1856, 100), "Deuce Body", fill=(0,0,0,255), font=font) #LABEL
+
+            draw.text((2167, 299), f"{deuce_wide_1st:.1%}", fill=(0,0,0,255), font=font) #USAGE %
+            draw.text((2167, 430), f"{deuce_wide_1st_win_pct:.1%}", fill=(0,0,0,255), font=font) #WIN %
+            draw.text((2110, 100), "Deuce Wide", fill=(0,0,0,255), font=font) #LABEL
+
+            st.image(img, use_container_width=True)
+
+        with col2:
+            st.header("2nd Serve Placement Chart")
+            img = Image.open("serve_placement.png").convert("RGBA")
+            draw = ImageDraw.Draw(img)
+
+            # If you have a .ttf font file, use it; otherwise PIL default
+            font = ImageFont.truetype(r"C:\Windows\Fonts\segoeuib.ttf", 40)
+            #font = ImageFont.load_default()
+
+            ########### AD ###########
+            draw.text((902, 299), f"{ad_wide_2nd:.1%}", fill=(0,0,0,255), font=font) #USAGE %
+            draw.text((902, 430), f"{ad_wide_2nd_win_pct:.1%}", fill=(0,0,0,255), font=font) #WIN %
+            draw.text((875, 100), "Ad Wide", fill=(0,0,0,255), font=font) #LABEL
+
+
+            draw.text((1155, 299), f"{ad_body_2nd:.1%}", fill=(0,0,0,255), font=font) #USAGE %
+            draw.text((1155, 430), f"{ad_body_2nd_win_pct:.1%}", fill=(0,0,0,255), font=font) #WIN %
+            draw.text((1130, 100), "Ad Body", fill=(0,0,0,255), font=font) #LABEL
+
+            draw.text((1413, 299), f"{ad_t_2nd:.1%}", fill=(0,0,0,255), font=font) #USAGE %
+            draw.text((1413, 430), f"{ad_t_2nd_win_pct:.1%}", fill=(0,0,0,255), font=font) #WIN %
+            draw.text((1420, 100), "Ad T", fill=(0,0,0,255), font=font) #LABEL
+
+            ########### DEUCE ###########
+            draw.text((1660, 299), f"{deuce_t_2nd:.1%}", fill=(0,0,0,255), font=font) #USAGE %
+            draw.text((1660, 430), f"{deuce_t_2nd_win_pct:.1%}", fill=(0,0,0,255), font=font) #WIN %
+            draw.text((1640, 100), "Deuce T", fill=(0,0,0,255), font=font) #LABEL
+
+            draw.text((1915, 299), f"{deuce_body_2nd:.1%}", fill=(0,0,0,255), font=font) #USAGE %
+            draw.text((1915, 430), f"{deuce_body_2nd_win_pct:.1%}", fill=(0,0,0,255), font=font) #WIN %
+            draw.text((1856, 100), "Deuce Body", fill=(0,0,0,255), font=font) #LABEL
+
+            draw.text((2167, 299), f"{deuce_wide_2nd:.1%}", fill=(0,0,0,255), font=font) #USAGE %
+            draw.text((2167, 430), f"{deuce_wide_2nd_win_pct:.1%}", fill=(0,0,0,255), font=font) #WIN %
+            draw.text((2110, 100), "Deuce Wide", fill=(0,0,0,255), font=font) #LABEL
+
+
+
+            st.image(img, use_container_width=True)
 
     with tab2:
         ############## SERVE TABLE ##############
@@ -465,7 +520,7 @@ if uploaded_file is not None:
 
             st.plotly_chart(fig, use_container_width=True)
                     # Keep rows where winner exists
-            
+    
 
 
     ###### Pressure Points Profile ######
