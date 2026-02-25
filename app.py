@@ -5,7 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import altair as alt
 import plotly.express as px
-from serve_metrics import service_winners, first_serve_percentage, second_serve_percentage, first_serve_points_won, second_serve_points_won, num_double_faults, num_aces
+from serve_metrics import break_points_saved, break_points_faced, service_games_broken, service_winners, first_serve_percentage, second_serve_percentage, serve_points_won, first_serve_points_won, second_serve_points_won, num_double_faults, num_aces, service_games_held
 from deuce_serve_placement import deuce_serves, deuce_serves_win_pct
 from ad_serve_placement import ad_serves, ad_serves_win_pct
 from group_bar_chart import grouped_percentage_bar_chart
@@ -78,6 +78,14 @@ if uploaded_file is not None:
 
         ss_points_won = second_serve_points_won(df, player)
 
+        service_points_won_pct = serve_points_won(df, player)
+
+        serve_games_won = service_games_held(df, player)
+        serve_games_broke = service_games_broken(df, player)
+
+        break_points_total = break_points_faced(df, player)
+        break_points_won = break_points_saved(df, player)
+
         # Double Faults and Aces
         double_faults = num_double_faults(df, player)
         aces = num_aces(df, player)
@@ -87,12 +95,12 @@ if uploaded_file is not None:
         ad_wide_1st = ad_serves(df, player, "Yes", "Wide")
         ad_wide_1st_win_pct = ad_serves_win_pct(df, player, "Yes", "Wide")
         ad_wide_2nd = ad_serves(df, player, "No", "Wide")
-        ad_wide_2nd_win_pct = deuce_serves_win_pct(df, player, "No", "Wide")
+        ad_wide_2nd_win_pct = ad_serves_win_pct(df, player, "No", "Wide")
         
         ad_body_1st = ad_serves(df, player, "Yes", "Body")
         ad_body_1st_win_pct = ad_serves_win_pct(df, player, "Yes", "Body")
         ad_body_2nd = ad_serves(df, player, "No", "Body")
-        ad_body_2nd_win_pct = deuce_serves_win_pct(df, player, "No", "Body")
+        ad_body_2nd_win_pct = ad_serves_win_pct(df, player, "No", "Body")
         
         ad_t_1st = ad_serves(df, player, "Yes", "T")
         ad_t_1st_win_pct = ad_serves_win_pct(df, player, "Yes", "T")
@@ -115,7 +123,7 @@ if uploaded_file is not None:
         deuce_t_2nd = deuce_serves(df, player, "No", "T")
         deuce_t_2nd_win_pct = deuce_serves_win_pct(df, player, "No", "T")
 
-        col1, col2, col3 = st.columns([2,1,1])
+        col1, col2, col3 = st.columns([1,1,1])
         ############## SERVE TABLE ##############
         with col1:
             serve_metrics_table = pd.DataFrame(
@@ -136,6 +144,22 @@ if uploaded_file is not None:
                 width="stretch",
                 hide_index=True
             )
+
+        with col2:
+            st.subheader(" ")
+            st.metric(label="Serve Points Won %", value=f"{service_points_won_pct:.1%}", width="stretch", height="stretch")
+            st.metric(label="Break Points Faced", value=break_points_total, width="stretch", height="stretch")
+        with col3:
+            st.subheader(" ")
+            st.metric(label="Games Held / Games Broken", value=f"{serve_games_won} / {serve_games_broke}", width="stretch", height="stretch")
+            st.metric(label="Break Points Saved", value=break_points_won, width="stretch", height="stretch")
+
+
+        ######################################################################### 
+        ######################################################################### 
+        ####### ADD BEST SERVE AND LEAST SUCCESSFUL SERVE FOR 1ST AND 2ND #######
+        #########################################################################   
+        ######################################################################### 
 
         ################ SERVE PLACEMENT ################
 
@@ -178,6 +202,8 @@ if uploaded_file is not None:
             draw.text((2110, 100), "Deuce Wide", fill=(0,0,0,255), font=font) #LABEL
 
             st.image(img, use_container_width=True)
+            first_serve_input = st.text_area("Coaches 1st Serve Observations")
+            st.write(first_serve_input)
 
         with col2:
             st.header("2nd Serve Placement Chart")
@@ -218,6 +244,8 @@ if uploaded_file is not None:
 
 
             st.image(img, use_container_width=True)
+            second_serve_input = st.text_area("Coaches 2nd Serve Observations")
+            st.write(second_serve_input)
 
     with tab2:
         ############## SERVE TABLE ##############

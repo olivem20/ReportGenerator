@@ -38,9 +38,10 @@ def second_serve_points_won(df: pd.DataFrame, player_name: str) -> float:
         (df["Server"] == player_name) &
         (df["A1: 1st Serve Made?"] == "No")
     ]
+
     points_won = serves["C1: Who Won Point?"].eq(player_name).sum()
-    total_first_serve_points = len(serves)
-    return points_won / total_first_serve_points
+    total_second_serve_points = len(serves)
+    return points_won / total_second_serve_points
 
 def num_double_faults(df: pd.DataFrame, player_name: str) -> float:
     serves = df[
@@ -64,3 +65,82 @@ def service_winners(df: pd.DataFrame, player_name: str) -> float:
         (df["D1: Winner Type"] == "Forced Error")
     ]
     return len(serves)
+
+def serve_points_won(df: pd.DataFrame, player_name: str) -> float:
+    serves = df[df["Server"] == player_name]
+
+    total_service_points = len(serves)
+    if total_service_points == 0:
+        return 0.0
+
+    points_won = serves["C1: Who Won Point?"].eq(player_name).sum()
+
+    return points_won / total_service_points
+
+def service_games_held(df: pd.DataFrame, player_name: str) -> int:
+    serves = df[df["Server"] == player_name]
+
+    # Score BEFORE the point
+    score = serves["Name"].astype(str).str.strip()
+
+    holds = serves[
+        score.str.startswith("40-") & 
+        (serves["C1: Who Won Point?"] == player_name)
+    ]
+    return len(holds)
+
+def service_games_broken(df: pd.DataFrame, player_name: str) -> int:
+    serves = df[df["Server"] == player_name].copy()
+
+    # Extract only the score portion before the space
+    score = (
+        serves["Name"]
+        .astype(str)
+        .str.strip()
+        .str.split(" ")
+        .str[0]
+    )
+
+    broken = serves[
+        score.isin(["0-40", "15-40", "30-40", "40-40"]) &
+        (serves["C1: Who Won Point?"] != player_name)
+    ]
+
+    return len(broken)
+
+def break_points_faced(df: pd.DataFrame, player_name: str) -> int:
+    serves = df[df["Server"] == player_name].copy()
+
+    # Extract only the score portion before the space
+    score = (
+        serves["Name"]
+        .astype(str)
+        .str.strip()
+        .str.split(" ")
+        .str[0]
+    )
+
+    break_points = serves[
+        score.isin(["0-40", "15-40", "30-40", "40-40"]) 
+    ]
+
+    return len(break_points)
+
+def break_points_saved(df: pd.DataFrame, player_name: str) -> int:
+    serves = df[df["Server"] == player_name].copy()
+
+    # Extract only the score portion before the space
+    score = (
+        serves["Name"]
+        .astype(str)
+        .str.strip()
+        .str.split(" ")
+        .str[0]
+    )
+
+    break_points = serves[
+        score.isin(["0-40", "15-40", "30-40", "40-40"]) &
+        (serves["C1: Who Won Point?"] == player_name)
+    ]
+
+    return len(break_points)

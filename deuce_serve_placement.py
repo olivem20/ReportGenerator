@@ -82,7 +82,6 @@ def deuce_serves_win_pct(df: pd.DataFrame, player_name: str, first_serve: str, s
             (base_score.isin(deuce_scores))
         ]
 
-
     if first_serve == "Yes":
         denominator = df[
             (df["Server"] == player_name) &
