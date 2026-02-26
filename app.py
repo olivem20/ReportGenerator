@@ -166,7 +166,7 @@ if uploaded_file is not None:
 
         col1, col2 = st.columns(2)
 
-        with col1:
+        with col1:  
             st.header("1st Serve Placement Chart")
             img = Image.open("serve_placement.png").convert("RGBA")
             draw = ImageDraw.Draw(img)
@@ -548,7 +548,55 @@ if uploaded_file is not None:
 
             st.plotly_chart(fig, use_container_width=True)
                     # Keep rows where winner exists
-    
+        
+        with col3:
+            # Only points the opponent won (i.e., player lost the point)
+            loss_points = df[df["C1: Who Won Point?"] == opponent].copy()
+
+            # Keep only the three outcomes we care about
+            categories = ["Unforced Error", "Double Fault", "Forced Error", f"{opponent} Winner"]
+            loss_points = loss_points[loss_points["F1: Error Type"].isin(categories)].copy()
+
+            # Count each category (ensure missing categories appear as 0)
+            counts = (
+                loss_points["F1: Error Type"]
+                .value_counts()
+                .reindex(categories, fill_value=0)
+            )
+
+            summary = pd.DataFrame({
+                "Category": counts.index,
+                "Count": counts.values
+            })
+
+            # Add percent of these three (optional but nice for labels)
+            total = summary["Count"].sum()
+            summary["Percent"] = summary["Count"].div(total).mul(100).round(1) if total > 0 else 0
+
+            # Single stacked bar needs a constant x
+            summary["Bar"] = "Errors Breakdown"
+
+            fig = px.bar(
+                summary,
+                x="Bar",
+                y="Count",
+                color="Category",
+                text=summary.apply(lambda r: f'{int(r["Count"])} ({r["Percent"]}%)', axis=1),
+                title="Errors Breakdown",
+                subtitle="This chart shows the distribution of how you lost points",
+                barmode="stack"
+            )
+
+            fig.update_traces(textposition="inside")
+
+            fig.update_layout(
+                xaxis_title="",
+                yaxis_title="Count",
+                legend_title_text="",
+            )
+
+            st.plotly_chart(fig, width="content")
+                
 
 
     ###### Pressure Points Profile ######
