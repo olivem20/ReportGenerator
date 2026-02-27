@@ -349,7 +349,8 @@ if uploaded_file is not None:
     with tab3:
         st.title("Winner Profile")
 
-        col1, col2, col3 = st.columns(3)
+        col1, col2 = st.columns(2) 
+        col3, col4 = st.columns(2)
         ###### Winner Profile ######
         with col1:
             # Only points player won
@@ -451,6 +452,60 @@ if uploaded_file is not None:
             )
 
             st.write(txt2)
+        
+        with col3:
+            winners = df[
+                (df["C1: Who Won Point?"] == player) &
+                (df["D1: Winner Type"].notna())
+            ].copy()
+
+            winners["D3: Shot Winner"] = winners["D3: Shot Winner"].astype(str).str.strip()
+            winners["D4: Winner Direction"] = winners["D4: Winner Direction"].astype(str).str.strip()
+
+            # ---- FOREHAND ----
+            fh = winners[winners["D3: Shot Winner"] == "Forehand"]
+
+            fh_counts = (
+                fh["D4: Winner Direction"]
+                .value_counts()
+                .reset_index()
+            )
+            fh_counts.columns = ["Direction", "Count"]
+
+            fig_fh = px.bar(
+                fh_counts,
+                x="Direction",
+                y="Count",
+                text="Count",
+                title="Forehand Winners by Direction"
+            )
+
+            fig_fh.update_traces(textposition="outside")
+            st.plotly_chart(fig_fh, use_container_width=True)
+
+        with col4:
+            # ---- BACKHAND ----
+            bh = winners[winners["D3: Shot Winner"] == "Backhand"]
+
+            bh_counts = (
+                bh["D4: Winner Direction"]
+                .value_counts()
+                .reset_index()
+            )
+            bh_counts.columns = ["Direction", "Count"]
+
+            fig_bh = px.bar(
+                bh_counts,
+                x="Direction",
+                y="Count",
+                text="Count",
+                title="Backhand Winners by Direction"
+            )
+
+            fig_bh.update_traces(textposition="outside")
+            st.plotly_chart(fig_bh, use_container_width=True)
+
+
 
     with tab4:
         ###### Error Profile ######
@@ -583,7 +638,6 @@ if uploaded_file is not None:
                 color="Category",
                 text=summary.apply(lambda r: f'{int(r["Count"])} ({r["Percent"]}%)', axis=1),
                 title="Errors Breakdown",
-                subtitle="This chart shows the distribution of how you lost points",
                 barmode="stack"
             )
 
@@ -595,8 +649,13 @@ if uploaded_file is not None:
                 legend_title_text="",
             )
 
+
             st.plotly_chart(fig, width="content")
-                
+            st.caption(
+                "This chart shows the distribution of how you lost points. "
+                "Forced error includes the number of points you made an error "
+                "due to your opponent hitting a very good shot."
+            )
 
 
     ###### Pressure Points Profile ######

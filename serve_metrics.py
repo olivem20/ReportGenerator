@@ -62,7 +62,7 @@ def service_winners(df: pd.DataFrame, player_name: str) -> float:
     serves = df[
         (df["Server"] == player_name) &
         (df["D3: Shot Winner"] == "Serve") &
-        (df["D1: Winner Type"] == "Forced Error")
+        (df["D1: Winner Type"] == "Forced Error") 
     ]
     return len(serves)
 
