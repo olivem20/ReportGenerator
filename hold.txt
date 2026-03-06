@@ -1,260 +1,165 @@
-        ############## DEUCE CHART ##############
-        with row1[0]:
-            usage_values = [
-                deuce_wide_serves,
-                deuce_body_serves,
-                deuce_t_serves
-            ]
+       ERROR BREAKDOWN CHART
+       
+        with col2:
 
-            win_values = [
-                first_deuce_wide_win,
-                first_deuce_body_win,
-                first_deuce_t_win
-            ]
+            # Filter to points where the OPPONENT won (i.e., player made the error)
+            errors = df[df["C1: Who Won Point?"] == opponent].copy()
 
-            # Create DataFrame
-            # Convert to percentage (0–100)
-            usage_values = [v * 100 for v in usage_values]
-            win_values = [v * 100 for v in win_values]
+            # Keep rows where an error exists
+            errors = errors[errors["F3: Shot Error"].notna()].copy()
 
-            df_deuce = pd.DataFrame({
-                "Placement": categories_deuce,
-                "Usage %": usage_values,
-                "Win %": win_values
+            # Clean fields
+            errors["F3: Shot Error"] = errors["F3: Shot Error"].astype(str).str.strip()
+            errors["F2: Spin Error"] = errors["F2: Spin Error"].astype(str).str.strip()
+            errors["F4: Error Direction"] = errors["F4: Error Direction"].astype(str).str.strip()
+
+            # Optional: if some spin/direction are missing, keep label clean
+            def build_error_label(row):
+                parts = [row["F3: Shot Error"], row["F2: Spin Error"], row["F4: Error Direction"]]
+                parts = [p for p in parts if p and str(p).lower() != "nan"]
+                return " - ".join(parts)
+
+            errors["Error Combo"] = errors.apply(build_error_label, axis=1)
+
+            # Remove any accidental empty labels
+            errors = errors[errors["Error Combo"]].notna().copy()
+
+            # Count combinations
+            combo_counts = (
+                errors["Error Combo"]
+                .value_counts()
+                .reset_index()
+            )
+            combo_counts.columns = ["Error Combo", "Count"]
+
+            # Add percent label
+            total = combo_counts["Count"].sum()
+            combo_counts["Percent"] = combo_counts["Count"] / total * 100
+            combo_counts["Label"] = combo_counts["Percent"].round(0).astype(int).astype(str) + "%"
+
+            # Horizontal bar chart
+            fig = px.bar(
+                combo_counts,
+                x="Count",
+                y="Error Combo",
+                orientation="h",
+                text="Label",
+                title="Error Breakdown (Shot + Spin + Direction)"
+            )
+
+            fig.update_traces(textposition="outside")
+            fig.update_layout(
+                yaxis_title="",
+                xaxis_title="Number of Errors"
+            )
+
+            st.plotly_chart(fig, use_container_width=True)
+                    # Keep rows where winner exists
+    
+        
+        with col3:
+            # Only points the opponent won (i.e., player lost the point)
+            loss_points = df[df["C1: Who Won Point?"] == opponent].copy()
+
+            # Keep only the three outcomes we care about
+            categories = ["Unforced Error", "Double Fault", "Forced Error", f"{opponent} Winner"]
+            loss_points = loss_points[loss_points["F1: Error Type"].isin(categories)].copy()
+
+            # Count each category (ensure missing categories appear as 0)
+            counts = (
+                loss_points["F1: Error Type"]
+                .value_counts()
+                .reindex(categories, fill_value=0)
+            )
+
+            summary = pd.DataFrame({
+                "Category": counts.index,
+                "Count": counts.values
             })
 
-            # Melt for grouped bars
-            df_deuce = df_deuce.melt(
-                id_vars="Placement",
-                var_name="Metric",
-                value_name="Percent"
+            # Add percent of these three (optional but nice for labels)
+            total = summary["Count"].sum()
+            summary["Percent"] = summary["Count"].div(total).mul(100).round(1) if total > 0 else 0
+
+            # Single stacked bar needs a constant x
+            summary["Bar"] = "Errors Breakdown"
+
+            fig = px.bar(
+                summary,
+                x="Bar",
+                y="Count",
+                color="Category",
+                text=summary.apply(lambda r: f'{int(r["Count"])} ({r["Percent"]}%)', axis=1),
+                title="Errors Breakdown",
+                barmode="stack"
             )
 
-            # Base chart
-            base = alt.Chart(df_deuce).encode(
-                x=alt.X("Placement:N", axis=alt.Axis(labelAngle=0), scale=alt.Scale(domain=categories_deuce)),
-                xOffset="Metric:N",
-                color="Metric:N"
+            fig.update_traces(textposition="inside")
+
+            fig.update_layout( 
+                xaxis_title="",
+                yaxis_title="Count",
+                legend_title_text="",
             )
 
-            # Bars
-            bars = base.mark_bar().encode(
-                y=alt.Y(
-                    "Percent:Q",
-                    axis=alt.Axis(format=".0f"),
-                    scale=alt.Scale(domain=[0, 100])
-                )
+
+            st.plotly_chart(fig, width="content")
+            st.caption(
+                "This chart shows the distribution of how you lost points. "
+                "Forced error includes the number of points you made an error "
+                "due to your opponent hitting a very good shot."
             )
 
-            # Text labels
-            text = base.mark_text(
-                dy=-5,                 # moves text above bar
-                fontSize=12,
-                fontWeight="bold"
-            ).encode(
-                y="Percent:Q",
-                text=alt.Text("Percent:Q", format=".0f")  # shows whole number
+
+        with col2:
+            # Keep rows where winner exists
+            wins = wins[wins["D3: Shot Winner"].notna()].copy()
+
+            # Clean fields
+            wins["D3: Shot Winner"] = wins["D3: Shot Winner"].astype(str).str.strip()
+            wins["D2: Spin Winner"] = wins["D2: Spin Winner"].astype(str).str.strip()
+            wins["D4: Winner Direction"] = wins["D4: Winner Direction"].astype(str).str.strip()
+            wins["A2: 1st Serve Location"] = wins["A2: 1st Serve Location"].astype(str).str.strip()
+
+            def build_winner_label(row):
+                if row["D3: Shot Winner"] == "Serve":
+                    return f"Serve - {row['A2: 1st Serve Location']}"
+                else:
+                    return f"{row['D3: Shot Winner']} - {row['D2: Spin Winner']} - {row['D4: Winner Direction']}"
+
+            wins["Winner Combo"] = wins.apply(build_winner_label, axis=1)
+            # Count combinations
+            combo_counts = (
+                wins["Winner Combo"]
+                .value_counts()
+                .reset_index()
             )
 
-            # Combine
-            chart = (bars + text).properties(
-                title="Deuce Side: 1st Serve Placement"
+            combo_counts.columns = ["Winner Combo", "Count"]
+
+            # Add percent label
+            total = combo_counts["Count"].sum()
+            combo_counts["Percent"] = combo_counts["Count"] / total * 100
+            combo_counts["Label"] = combo_counts["Percent"].round(0).astype(int).astype(str) + "%"
+
+            # Create horizontal bar chart (better for long labels)
+            fig = px.bar(
+                combo_counts,
+                x="Count",
+                y="Winner Combo",
+                orientation="h",
+                text="Label",
+                title="Winner Breakdown (Shot + Spin + Direction)"
             )
 
-            st.altair_chart(chart, use_container_width=True)
-
-
-        ############## AD CHART #############
-        with row1[1]:
-            usage_values = [
-                ad_t_serves,
-                ad_body_serves,
-                ad_wide_serves
-            ]
- 
-            win_values = [
-                first_ad_wide_win,
-                first_ad_body_win,
-                first_ad_t_win
-            ]
-
-            # Create DataFrame
-            # Convert to percentage (0–100)
-            usage_values = [v * 100 for v in usage_values]
-            win_values = [v * 100 for v in win_values]
-
-            df_ad = pd.DataFrame({
-                "Placement": categories_ad,
-                "Usage %": usage_values,
-                "Win %": win_values
-            })
-
-            # Melt for grouped bars
-            df_ad = df_ad.melt(
-                id_vars="Placement",
-                var_name="Metric",
-                value_name="Percent"
+            fig.update_traces(textposition="outside")
+            fig.update_layout(
+                yaxis_title="",
+                xaxis_title="Number of Winners / Forced Errors"
             )
 
-            # Base chart
-            base = alt.Chart(df_ad).encode(
-                x=alt.X("Placement:N", axis=alt.Axis(labelAngle=0), scale=alt.Scale(domain=categories_ad)),
-                xOffset="Metric:N",
-                color="Metric:N"
-            )
+            st.plotly_chart(fig, use_container_width=True)
 
-            # Bars
-            bars = base.mark_bar().encode(
-                y=alt.Y(
-                    "Percent:Q",
-                    axis=alt.Axis(format=".0f"),
-                    scale=alt.Scale(domain=[0, 100])
-                )
-            )
-
-            # Text labels
-            text = base.mark_text(
-                dy=-5,                 # moves text above bar
-                fontSize=12,
-                fontWeight="bold"
-            ).encode(
-                y="Percent:Q",
-                text=alt.Text("Percent:Q", format=".0f")  # shows whole number
-            )
-
-            # Combine
-            chart = (bars + text).properties(
-                title="Ad Side: 1st Serve Placement"
-            )
-
-            st.altair_chart(chart, use_container_width=True)
-
-        with row2[0]:
-            usage_values = [
-                deuce_wide_serves,
-                deuce_body_serves,
-                deuce_t_serves
-            ]
-
-            win_values = [
-                second_deuce_wide_win,
-                second_deuce_body_win,
-                second_deuce_t_win
-            ]
-
-            # Create DataFrame
-            # Convert to percentage (0–100)
-            usage_values = [v * 100 for v in usage_values]
-            win_values = [v * 100 for v in win_values]
-
-            df_deuce = pd.DataFrame({
-                "Placement": categories_deuce,
-                "Usage %": usage_values,
-                "Win %": win_values
-            })
-
-            # Melt for grouped bars
-            df_deuce = df_deuce.melt(
-                id_vars="Placement",
-                var_name="Metric",
-                value_name="Percent"
-            )
-
-            # Base chart
-            base = alt.Chart(df_deuce).encode(
-                x=alt.X("Placement:N", axis=alt.Axis(labelAngle=0), scale=alt.Scale(domain=categories_deuce)),
-                xOffset="Metric:N",
-                color="Metric:N"
-            )
-
-            # Bars
-            bars = base.mark_bar().encode(
-                y=alt.Y(
-                    "Percent:Q",
-                    axis=alt.Axis(format=".0f"),
-                    scale=alt.Scale(domain=[0, 100])
-                )
-            )
-
-            # Text labels
-            text = base.mark_text(
-                dy=-5,                 # moves text above bar
-                fontSize=12,
-                fontWeight="bold"
-            ).encode(
-                y="Percent:Q",
-                text=alt.Text("Percent:Q", format=".0f")  # shows whole number
-            )
-
-            # Combine
-            chart = (bars + text).properties(
-                title="Deuce Side: 2nd Serve Placement"
-            )
-
-            st.altair_chart(chart, use_container_width=True)
-
-        with row2[1]:
-            usage_values = [
-                ad_wide_serves,
-                ad_body_serves,
-                ad_t_serves
-            ]
-
-            win_values = [
-                second_ad_wide_win,
-                second_ad_body_win,
-                second_ad_t_win
-            ]
-
-            # Create DataFrame
-            # Convert to percentage (0–100)
-            usage_values = [v * 100 for v in usage_values]
-            win_values = [v * 100 for v in win_values]
-
-            df_deuce = pd.DataFrame({
-                "Placement": categories_deuce,
-                "Usage %": usage_values,
-                "Win %": win_values
-            })
-
-            # Melt for grouped bars
-            df_deuce = df_deuce.melt(
-                id_vars="Placement",
-                var_name="Metric",
-                value_name="Percent"
-            )
-
-            # Base chart
-            base = alt.Chart(df_deuce).encode(
-                x=alt.X("Placement:N", axis=alt.Axis(labelAngle=0), scale=alt.Scale(domain=categories_ad)),
-                xOffset="Metric:N",
-                color="Metric:N"
-            )
-
-            # Bars
-            bars = base.mark_bar().encode(
-                y=alt.Y(
-                    "Percent:Q",
-                    axis=alt.Axis(format=".0f"),
-                    scale=alt.Scale(domain=[0, 100])
-                )
-            )
-
-            # Text labels
-            text = base.mark_text(
-                dy=-5,                 # moves text above bar
-                fontSize=12,
-                fontWeight="bold"
-            ).encode(
-                y="Percent:Q",
-                text=alt.Text("Percent:Q", format=".0f")  # shows whole number
-            )
-
-            # Combine
-            chart = (bars + text).properties(
-                title="Ad Side: 2nd Serve Placement"
-            )
-
-            st.altair_chart(chart, use_container_width=True)
+            st.write("This winner breakdown includes both winners and forced errors")
 
 

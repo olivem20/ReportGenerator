@@ -9,7 +9,7 @@ from serve_metrics import break_points_saved, break_points_faced, service_games_
 from deuce_serve_placement import deuce_serves, deuce_serves_win_pct
 from ad_serve_placement import ad_serves, ad_serves_win_pct
 from group_bar_chart import grouped_percentage_bar_chart
-from return_metrics import return_percentage, first_return_pct, second_return_pct, first_return_errors, second_return_errors
+from return_metrics import ad_return_win_pct, ad_return_count, deuce_return_win_pct, deuce_return_count, return_games_won, return_games_played, return_percentage, first_return_pct, second_return_pct, first_return_errors, second_return_errors
 from themes import WINNER_PIE_COLORS, ERROR_PIE_COLORS, SERVE_COLORS
 
 st.title("Report Generator")
@@ -46,11 +46,11 @@ if uploaded_file is not None:
                 st.write("Headshot not found")
     with col3:
         ### WRITE INFO ###  
-        st.title(f"***Match Winner:*** {match_winner}", text_alignment="center")
+        st.title(f"***Player:*** {player}", text_alignment="center")
         st.markdown(f"## ***Final Score:*** {final_score}")
-        st.markdown(f"## ***Player:*** {player}")
         st.markdown(f"## ***Opponent:*** {opponent}")
         st.markdown(f"## ***Opponent School:*** {opponent_school}")
+        st.markdown(f"## ***Match Winner:*** {match_winner}")
         st.markdown(f"## ***Location:*** {location}")
         st.markdown(f"## ***Date:*** {date}")
 
@@ -202,7 +202,7 @@ if uploaded_file is not None:
             draw.text((2110, 100), "Deuce Wide", fill=(0,0,0,255), font=font) #LABEL
 
             st.image(img, use_container_width=True)
-            first_serve_input = st.text_area("Coaches 1st Serve Observations")
+            first_serve_input = st.text_area("Coach's 1st Serve Observations")
             st.write(first_serve_input)
 
         with col2:
@@ -244,7 +244,7 @@ if uploaded_file is not None:
 
 
             st.image(img, use_container_width=True)
-            second_serve_input = st.text_area("Coaches 2nd Serve Observations")
+            second_serve_input = st.text_area("Coach's 2nd Serve Observations")
             st.write(second_serve_input)
 
     with tab2:
@@ -252,7 +252,10 @@ if uploaded_file is not None:
         ###### Returning Profile ######
         st.header("Return Profile")
 
-        col1, col2, col3 = st.columns(3)
+        col1, col2 = st.columns(2)
+        col3, col4 = st.columns(2)
+        col5, col6 = st.columns(2)
+
         # Return Points Won Percentage
         returns = return_percentage(df, player, opponent)
 
@@ -264,15 +267,19 @@ if uploaded_file is not None:
 
         firstReturnErrors = first_return_errors(df, player, opponent)
         secondReturnErrors = second_return_errors(df, player, opponent)
-        
+        returnGamesWon = return_games_won(df, player)
+        returnGamesPlayed = return_games_played(df, player)
+
+
         with col1:
             return_metrics_table = pd.DataFrame(
             [
-                {"Metric": "Return Points Won", "Value": f"{returns:.1%}"},
-                {"Metric": "1st Serve Return Points Won", "Value": f"{first_returns:.1%}"},
-                {"Metric": "2nd Serve Return Points Won", "Value": f"{second_returns:.1%}"},
-                {"Metric": "1st Serve Returns Missed", "Value": int(firstReturnErrors)},
-                {"Metric": "2nd Serve Returns Missed", "Value": int(secondReturnErrors)},
+                {"Metric": "% Return Points Won", "Value": f"{returns:.1%}"},
+                {"Metric": "% " "1st Serve Return Points Won", "Value": f"{first_returns:.1%}"},
+                {"Metric": "% " "2nd Serve Return Points Won", "Value": f"{second_returns:.1%}"},
+                {"Metric": "Return Games Won/Played", "Value": f"{returnGamesWon}/{returnGamesPlayed}"},
+                {"Metric": "1st Serve Return Errors", "Value": int(firstReturnErrors)},
+                {"Metric": "2nd Serve Return Errors", "Value": int(secondReturnErrors)},
             ]
             )
 
@@ -346,11 +353,167 @@ if uploaded_file is not None:
 
             st.plotly_chart(fig, use_container_width=True)
 
+        with col3:
+            deuce_fh_cross = deuce_return_count(df, player, "Forehand", "Cross Court")
+            deuce_fh_middle = deuce_return_count(df, player, "Forehand", "Middle")
+            deuce_fh_line = deuce_return_count(df, player, "Forehand", "Down Line")
+
+            deuce_fh_cross_win = deuce_return_win_pct(df, player, "Forehand", "Cross Court")
+            deuce_fh_middle_win = deuce_return_win_pct(df, player, "Forehand", "Middle")
+            deuce_fh_line_win = deuce_return_win_pct(df, player, "Forehand", "Down Line")
+
+             
+            img = Image.open("deuce_return.png").convert("RGBA")
+            draw = ImageDraw.Draw(img)
+
+            # If you have a .ttf font file, use it; otherwise PIL default
+            font = ImageFont.truetype(r"C:\Windows\Fonts\segoeuib.ttf", 40)
+            #font = ImageFont.load_default()
+
+
+            ########### KEY ###########
+            draw.text((205, 145), "Key", fill=(0,0,0,255), font=font) 
+            draw.text((180, 256), "Count", fill=(0,0,0,255), font=font) 
+            draw.text((180, 390), "Win %", fill=(0,0,0,255), font=font) 
+
+            ########### STATS ###########
+            draw.text((735, 177), str(deuce_fh_cross), fill=(0,0,0,255), font=font) 
+            draw.text((997, 177), str(deuce_fh_middle), fill=(0,0,0,255), font=font) 
+            draw.text((1265 , 177), str(deuce_fh_line), fill=(0,0,0,255), font=font) 
+
+            ########### STATS ###########
+            draw.text((695, 282), f"{deuce_fh_cross_win:.1%}", fill=(0,0,0,255), font=font) 
+            draw.text((960, 282), f"{deuce_fh_middle_win:.1%}", fill=(0,0,0,255), font=font) 
+            draw.text((1220, 282), f"{deuce_fh_line_win:.1%}", fill=(0,0,0,255), font=font)
+
+            st.header("Deuce Side Forehand Returns")
+            st.image(img, use_container_width=True)
+
+        with col4:
+            deuce_bh_cross = deuce_return_count(df, player, "Backhand", "Inside Out")
+            deuce_bh_middle = deuce_return_count(df, player, "Backhand", "Middle")
+            deuce_bh_line = deuce_return_count(df, player, "Backhand", "Inside In")
+
+            deuce_bh_cross_win = deuce_return_win_pct(df, player, "Backhand", "Inside Out")
+            deuce_bh_middle_win = deuce_return_win_pct(df, player, "Backhand", "Middle")
+            deuce_bh_line_win = deuce_return_win_pct(df, player, "Backhand", "Inside In")
+
+             
+            img = Image.open("deuce_return.png").convert("RGBA")
+            draw = ImageDraw.Draw(img)
+
+            # If you have a .ttf font file, use it; otherwise PIL default
+            font = ImageFont.truetype(r"C:\Windows\Fonts\segoeuib.ttf", 40)
+            #font = ImageFont.load_default()
+
+
+            ########### KEY ###########
+            draw.text((205, 145), "Key", fill=(0,0,0,255), font=font) 
+            draw.text((180, 256), "Count", fill=(0,0,0,255), font=font) 
+            draw.text((180, 390), "Win %", fill=(0,0,0,255), font=font) 
+
+            ########### STATS ###########
+            draw.text((735, 177), str(deuce_bh_cross), fill=(0,0,0,255), font=font) 
+            draw.text((997, 177), str(deuce_bh_middle), fill=(0,0,0,255), font=font) 
+            draw.text((1265 , 177), str(deuce_bh_line), fill=(0,0,0,255), font=font) 
+
+            ########### STATS ###########
+            draw.text((695, 282), f"{deuce_bh_cross_win:.1%}", fill=(0,0,0,255), font=font) 
+            draw.text((960, 282), f"{deuce_bh_middle_win:.1%}", fill=(0,0,0,255), font=font) 
+            draw.text((1220, 282), f"{deuce_bh_line_win:.1%}", fill=(0,0,0,255), font=font)
+
+            st.header("Deuce Side Backhand Returns")
+            st.image(img, use_container_width=True)
+
+        with col5:
+            ad_fh_inside_out = ad_return_count(df, player, "Forehand", "Inside Out")
+            ad_fh_middle = ad_return_count(df, player, "Forehand", "Middle")
+            ad_fh_inside_in = ad_return_count(df, player, "Forehand", "Inside In")
+
+            ad_fh_inside_out_win = ad_return_win_pct(df, player, "Forehand", "Inside Out")
+            ad_fh_middle_win = ad_return_win_pct(df, player, "Forehand", "Middle")
+            ad_fh_inside_in_win = ad_return_win_pct(df, player, "Forehand", "Inside In")
+
+             
+            img = Image.open("ad_return.png").convert("RGBA")
+            draw = ImageDraw.Draw(img)
+
+            # If you have a .ttf font file, use it; otherwise PIL default
+            font = ImageFont.truetype(r"C:\Windows\Fonts\segoeuib.ttf", 40)
+            #font = ImageFont.load_default()
+
+
+            ########### KEY ###########
+            draw.text((205, 145), "Key", fill=(0,0,0,255), font=font) 
+            draw.text((180, 256), "Count", fill=(0,0,0,255), font=font) 
+            draw.text((180, 390), "Win %", fill=(0,0,0,255), font=font) 
+
+            ########### STATS ###########
+            draw.text((735, 177), str(ad_fh_inside_in), fill=(0,0,0,255), font=font) 
+            draw.text((997, 177), str(ad_fh_middle), fill=(0,0,0,255), font=font) 
+            draw.text((1265 , 177), str(ad_fh_inside_out), fill=(0,0,0,255), font=font) 
+
+            ########### STATS ###########
+            draw.text((695, 282), f"{ad_fh_inside_in_win:.1%}", fill=(0,0,0,255), font=font) 
+            draw.text((960, 282), f"{ad_fh_middle_win:.1%}", fill=(0,0,0,255), font=font) 
+            draw.text((1220, 282), f"{ad_fh_inside_out_win:.1%}", fill=(0,0,0,255), font=font)
+
+            st.header("Ad Side Forehand Returns")
+            st.image(img, use_container_width=True)
+    
+        with col6:
+            ad_bh_cross = ad_return_count(df, player, "Backhand", "Cross Court")
+            ad_bh_middle = ad_return_count(df, player, "Backhand", "Middle")
+            ad_bh_line = ad_return_count(df, player, "Backhand", "Down Line")
+
+            ad_bh_cross_win = ad_return_win_pct(df, player, "Backhand", "Cross Court")
+            ad_bh_middle_win = ad_return_win_pct(df, player, "Backhand", "Middle")
+            ad_bh_line_win = ad_return_win_pct(df, player, "Backhand", "Down Line")
+
+             
+            img = Image.open("ad_return.png").convert("RGBA")
+            draw = ImageDraw.Draw(img)
+
+            # If you have a .ttf font file, use it; otherwise PIL default
+            font = ImageFont.truetype(r"C:\Windows\Fonts\segoeuib.ttf", 40)
+            #font = ImageFont.load_default()
+
+
+            ########### KEY ###########
+            draw.text((205, 145), "Key", fill=(0,0,0,255), font=font) 
+            draw.text((180, 256), "Count", fill=(0,0,0,255), font=font) 
+            draw.text((180, 390), "Win %", fill=(0,0,0,255), font=font) 
+
+            ########### STATS ###########
+            draw.text((735, 177), str(ad_bh_line), fill=(0,0,0,255), font=font) 
+            draw.text((997, 177), str(ad_bh_middle), fill=(0,0,0,255), font=font) 
+            draw.text((1265 , 177), str(ad_bh_cross), fill=(0,0,0,255), font=font) 
+
+            ########### STATS ###########
+            draw.text((695, 282), f"{ad_bh_cross_win:.1%}", fill=(0,0,0,255), font=font) 
+            draw.text((960, 282), f"{ad_bh_middle_win:.1%}", fill=(0,0,0,255), font=font) 
+            draw.text((1220, 282), f"{ad_bh_line_win:.1%}", fill=(0,0,0,255), font=font)
+
+            st.header("Ad Side Backhand Returns")
+            st.image(img, use_container_width=True)
+
+        ###################################################################
+        ##################### ADD OPPONENT RETURNS ########################
+        ###################################################################
+
+
+        return_input = st.text_area("Coach's Return Observations")
+        st.write(return_input)
+
+        st.write("add something here about how often opponent attacked certain serves and also" \
+        "how often they won those points")
+        st.write("this way we can see if serving was a liability or what not")
+
     with tab3:
         st.title("Winner Profile")
-
-        col1, col2 = st.columns(2) 
-        col3, col4 = st.columns(2)
+        col1, col2, col22 = st.columns(3) 
+        col3, col4, col5 = st.columns(3) 
+        
         ###### Winner Profile ######
         with col1:
             # Only points player won
@@ -389,70 +552,59 @@ if uploaded_file is not None:
 
             st.plotly_chart(fig, use_container_width=True)
             st.write("This winner distribution includes both winners and shots that forced an error")
-
-            txt = st.text_area(
-                "Please input your coaching here"
-            )
-
-            st.write(txt)
         
-
+        
         with col2:
-            # Keep rows where winner exists
-            wins = wins[wins["D3: Shot Winner"].notna()].copy()
+                    # Points where YOU hit the winner (i.e., you won the point)
+            winner_points = df[df["C1: Who Won Point?"] == player].copy()
 
-            # Clean fields
-            wins["D3: Shot Winner"] = wins["D3: Shot Winner"].astype(str).str.strip()
-            wins["D2: Spin Winner"] = wins["D2: Spin Winner"].astype(str).str.strip()
-            wins["D4: Winner Direction"] = wins["D4: Winner Direction"].astype(str).str.strip()
-            wins["A2: 1st Serve Location"] = wins["A2: 1st Serve Location"].astype(str).str.strip()
+            # Clean Winner Type
+            winner_points["D1: Winner Type"] = winner_points["D1: Winner Type"].astype("string").str.strip()
 
-            def build_winner_label(row):
-                if row["D3: Shot Winner"] == "Serve":
-                    return f"Serve - {row['A2: 1st Serve Location']}"
-                else:
-                    return f"{row['D3: Shot Winner']} - {row['D2: Spin Winner']} - {row['D4: Winner Direction']}"
+            # Keep only rows where Winner Type exists
+            winner_points = winner_points[
+                winner_points["D1: Winner Type"].notna() &
+                (winner_points["D1: Winner Type"].str.strip() != "")
+            ].copy()
 
-            wins["Winner Combo"] = wins.apply(build_winner_label, axis=1)
-            # Count combinations
-            combo_counts = (
-                wins["Winner Combo"]
-                .value_counts()
-                .reset_index()
-            )
+            # Count each Winner Type
+            counts = winner_points["D1: Winner Type"].value_counts()
 
-            combo_counts.columns = ["Winner Combo", "Count"]
+            summary = pd.DataFrame({
+                "Winner Type": counts.index,
+                "Count": counts.values
+            })
 
-            # Add percent label
-            total = combo_counts["Count"].sum()
-            combo_counts["Percent"] = combo_counts["Count"] / total * 100
-            combo_counts["Label"] = combo_counts["Percent"].round(0).astype(int).astype(str) + "%"
+            # Add percent (for labels)
+            total = summary["Count"].sum()
+            summary["Percent"] = summary["Count"].div(total).mul(100).round(1) if total > 0 else 0
 
-            # Create horizontal bar chart (better for long labels)
+            # Single stacked bar needs a constant x
+            summary["Bar"] = "Winners Breakdown"
+
             fig = px.bar(
-                combo_counts,
-                x="Count",
-                y="Winner Combo",
-                orientation="h",
-                text="Label",
-                title="Winner Breakdown (Shot + Spin + Direction)"
+                summary,
+                x="Bar",
+                y="Count",
+                color="Winner Type",
+                text=summary.apply(lambda r: f'{int(r["Count"])} ({r["Percent"]}%)', axis=1),
+                title="Winners Breakdown",
+                barmode="stack"
             )
 
-            fig.update_traces(textposition="outside")
+            fig.update_traces(textposition="inside")
+
             fig.update_layout(
-                yaxis_title="",
-                xaxis_title="Number of Winners / Forced Errors"
+                xaxis_title="",
+                yaxis_title="Count",
+                legend_title_text="",
             )
 
             st.plotly_chart(fig, use_container_width=True)
+            st.write("This chart breaksdown how you won your points," \
+            "whether you won the point being offensive or if your opponent made" \
+            "an error")
 
-            st.write("This winner breakdown includes both winners and forced errors")
-            txt2 = st.text_area(
-                "Please input your coaching here "
-            )
-
-            st.write(txt2)
-        
         with col3:
             winners = df[
                 (df["C1: Who Won Point?"] == player) &
@@ -505,11 +657,24 @@ if uploaded_file is not None:
             fig_bh.update_traces(textposition="outside")
             st.plotly_chart(fig_bh, use_container_width=True)
 
+        with col22:
+            points_won = len(df[df["C1: Who Won Point?"] == player].copy())
+            points_played = len(df) - 1
 
+            points_won_pct = points_won / points_played
 
-    with tab4:
+            st.metric(label="Points Won / Points Played", value=f"{points_won} / {points_played}", width="stretch")
+            
+            st.metric(label="% Points Won", value=f"{points_won_pct:.1%}", width="stretch")
+
+            winner_input = st.text_area("Coach's Winner Observations")
+            st.write(winner_input)
+
+    with tab4: 
         ###### Error Profile ######
-        col1, col2, col3 = st.columns(3)
+        col1, col2, col25 = st.columns(3)
+        col3, col4, col5 = st.columns(3)
+
         with col1:
             errors = df[df["C1: Who Won Point?"] == opponent].copy()
 
@@ -547,64 +712,8 @@ if uploaded_file is not None:
             )
 
             st.plotly_chart(fig, use_container_width=True)
-        
+
         with col2:
-
-            # Filter to points where the OPPONENT won (i.e., player made the error)
-            errors = df[df["C1: Who Won Point?"] == opponent].copy()
-
-            # Keep rows where an error exists
-            errors = errors[errors["F3: Shot Error"].notna()].copy()
-
-            # Clean fields
-            errors["F3: Shot Error"] = errors["F3: Shot Error"].astype(str).str.strip()
-            errors["F2: Spin Error"] = errors["F2: Spin Error"].astype(str).str.strip()
-            errors["F4: Error Direction"] = errors["F4: Error Direction"].astype(str).str.strip()
-
-            # Optional: if some spin/direction are missing, keep label clean
-            def build_error_label(row):
-                parts = [row["F3: Shot Error"], row["F2: Spin Error"], row["F4: Error Direction"]]
-                parts = [p for p in parts if p and str(p).lower() != "nan"]
-                return " - ".join(parts)
-
-            errors["Error Combo"] = errors.apply(build_error_label, axis=1)
-
-            # Remove any accidental empty labels
-            errors = errors[errors["Error Combo"].notna() & (errors["Error Combo"].str.strip() != "")].copy()
-
-            # Count combinations
-            combo_counts = (
-                errors["Error Combo"]
-                .value_counts()
-                .reset_index()
-            )
-            combo_counts.columns = ["Error Combo", "Count"]
-
-            # Add percent label
-            total = combo_counts["Count"].sum()
-            combo_counts["Percent"] = combo_counts["Count"] / total * 100
-            combo_counts["Label"] = combo_counts["Percent"].round(0).astype(int).astype(str) + "%"
-
-            # Horizontal bar chart
-            fig = px.bar(
-                combo_counts,
-                x="Count",
-                y="Error Combo",
-                orientation="h",
-                text="Label",
-                title="Error Breakdown (Shot + Spin + Direction)"
-            )
-
-            fig.update_traces(textposition="outside")
-            fig.update_layout(
-                yaxis_title="",
-                xaxis_title="Number of Errors"
-            )
-
-            st.plotly_chart(fig, use_container_width=True)
-                    # Keep rows where winner exists
-        
-        with col3:
             # Only points the opponent won (i.e., player lost the point)
             loss_points = df[df["C1: Who Won Point?"] == opponent].copy()
 
@@ -643,7 +752,7 @@ if uploaded_file is not None:
 
             fig.update_traces(textposition="inside")
 
-            fig.update_layout(
+            fig.update_layout( 
                 xaxis_title="",
                 yaxis_title="Count",
                 legend_title_text="",
@@ -657,6 +766,180 @@ if uploaded_file is not None:
                 "due to your opponent hitting a very good shot."
             )
 
+        with col25:
+            error_input = st.text_area("Coach's Error Observations")
+            st.write(error_input)
 
-    ###### Pressure Points Profile ######
+        with col3:
+            errors = df[
+                (df["C1: Who Won Point?"] == opponent) & 
+                (df["F1: Error Type"] == "Unforced Error")    
+            ].copy()
 
+
+            # ---- FOREHAND ----
+            fh = errors[errors["F3: Shot Error"] == "Forehand"]
+
+            fh_counts = (
+                fh["F5: Placement Error"]
+                .value_counts()
+                .reset_index()
+            )
+            fh_counts.columns = ["Placement", "Count"]
+
+            fig_fh = px.bar(
+                fh_counts,
+                x="Placement",
+                y="Count",
+                text="Count",
+                title="Forehand Errors by Placement"
+            )
+
+            fig_fh.update_traces(textposition="outside")
+            st.plotly_chart(fig_fh, use_container_width=True)
+
+        with col4:
+            errors = df[
+                (df["C1: Who Won Point?"] == opponent) & 
+                (df["F1: Error Type"] == "Unforced Error")    
+            ].copy()
+
+
+            # ---- FOREHAND ----
+            fh = errors[errors["F3: Shot Error"] == "Backhand"]
+
+            fh_counts = (
+                fh["F5: Placement Error"]
+                .value_counts()
+                .reset_index()
+            )
+            fh_counts.columns = ["Placement", "Count"]
+
+            fig_fh = px.bar(
+                fh_counts,
+                x="Placement",
+                y="Count",
+                text="Count",
+                title="Backhand Errors by Placement"
+            )
+
+            fig_fh.update_traces(textposition="outside")
+            st.plotly_chart(fig_fh, use_container_width=True)
+        
+    with tab5:
+        st.header("Deuce Points")
+        deuce_points = df[df["Deuce"].notna()].copy()
+
+        deuce_points_played = len(deuce_points)
+
+        deuce_points_won = len(
+            deuce_points[deuce_points["C1: Who Won Point?"] == player]
+        )
+
+        win_pct = (deuce_points_won / deuce_points_played) * 100 if deuce_points_played > 0 else 0
+
+        st.metric(
+            "Deuce Points Won",
+            f"{deuce_points_won}/{deuce_points_played} ({win_pct:.0f}%)"
+        )
+
+        st.header("Momentum")
+    
+    with tab6:
+        st.header("Opponent Scouting")
+
+        col1, col2, col3, col4 = st.columns([3, 1, 2, 1])
+
+        # -------------------------
+        # 1) Opponent Winners + Forced Errors
+        # -------------------------
+        with col1:
+            st.subheader("How opponent won points (Winners + Forced Errors)")
+
+            opp_offense = df[df["C1: Who Won Point?"] == opponent].copy()
+
+            opp_offense = df[
+                (df["C1: Who Won Point?"] == opponent) & 
+                (df["G1: Opp. Winner Shot"].notna())    
+            ].copy()
+
+
+            # Combine Shot + Spin into one label
+            opp_offense["Winner Label"] = (
+                opp_offense["G1: Opp. Winner Shot"] + " - " + opp_offense["G2: Opp. Winner Spin"]
+            )
+
+            winner_counts = (
+                opp_offense["Winner Label"]
+                .value_counts()
+                .reset_index()
+            )
+            winner_counts.columns = ["Winner Label", "Count"]
+
+            fig = px.pie(
+                winner_counts,
+                names="Winner Label",
+                values="Count",
+                title="Opponent Winner Distribution (Shot + Spin)",
+                color="Winner Label",
+                color_discrete_sequence=px.colors.sequential.Greens[::-1]  # optional
+            )
+
+            fig.update_traces(textinfo="percent+label", textposition="inside")
+            st.plotly_chart(fig, use_container_width=True)
+
+
+        with col3:
+            st.subheader("How Opponent Lost Points (Unforced Errors)")
+
+            opp_errors = df[
+                (df["C1: Who Won Point?"] == player) &
+                (df["E2: Opp. Unforced Error Shot"].notna())
+            ].copy()
+
+            # Clean columns
+            opp_errors["E2: Opp. Unforced Error Shot"] = (
+                opp_errors["E2: Opp. Unforced Error Shot"]
+                .astype(str)
+                .str.strip()
+            )
+
+            opp_errors["E1: Opp. Unforced Error Spin"] = (
+                opp_errors["E1: Opp. Unforced Error Spin"]
+                .fillna("Unknown")
+                .astype(str)
+                .str.strip()
+            )
+
+            # Combine Shot + Spin
+            opp_errors["Error Label"] = (
+                opp_errors["E2: Opp. Unforced Error Shot"] + " - " +
+                opp_errors["E1: Opp. Unforced Error Spin"]
+            )
+
+            error_counts = (
+                opp_errors["Error Label"]
+                .value_counts()
+                .reset_index()
+            )
+
+            error_counts.columns = ["Error Label", "Count"]
+
+            fig = px.pie(
+                error_counts,
+                names="Error Label",
+                values="Count",
+                title="Opponent Unforced Errors (Shot + Spin)",
+                color="Error Label",
+                color_discrete_sequence=px.colors.sequential.Reds[::-1]
+            )
+
+            fig.update_traces(
+                textinfo="percent+label",
+                textposition="inside"
+            )
+
+            st.plotly_chart(fig, use_container_width=True)
+        
+        scout_input = st.text_area("Coach's Scouting Observations")
+        st.write(scout_input)
