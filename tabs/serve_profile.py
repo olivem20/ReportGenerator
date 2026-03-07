@@ -2,14 +2,14 @@ import pandas as pd
 import streamlit as st
 from PIL import Image, ImageDraw
 
-from serve_metrics import (
+from metrics.serve_metrics import (
     break_points_saved, break_points_faced, service_games_broken,
     service_winners, first_serve_percentage, second_serve_percentage,
     serve_points_won, first_serve_points_won, second_serve_points_won,
     num_double_faults, num_aces, service_games_held
 )
-from deuce_serve_placement import deuce_serves, deuce_serves_win_pct
-from ad_serve_placement import ad_serves, ad_serves_win_pct
+from metrics.deuce_serve_placement import deuce_serves, deuce_serves_win_pct
+from metrics.ad_serve_placement import ad_serves, ad_serves_win_pct
 from font import get_font
 
 
@@ -115,7 +115,7 @@ def render_serve_profile(df, player):
 
         with col1:  
             st.header("1st Serve Placement Chart")
-            img = Image.open("serve_placement.png").convert("RGBA")
+            img = Image.open("assets/serve_placement.png").convert("RGBA")
             draw = ImageDraw.Draw(img)
 
             # If you have a .ttf font file, use it; otherwise PIL default
@@ -154,7 +154,7 @@ def render_serve_profile(df, player):
 
         with col2:
             st.header("2nd Serve Placement Chart")
-            img = Image.open("serve_placement.png").convert("RGBA")
+            img = Image.open("assets/serve_placement.png").convert("RGBA")
             draw = ImageDraw.Draw(img)
 
             # If you have a .ttf font file, use it; otherwise PIL default

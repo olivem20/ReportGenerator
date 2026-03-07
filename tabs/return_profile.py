@@ -3,7 +3,7 @@ import streamlit as st
 import plotly.express as px
 from PIL import Image, ImageDraw
 
-from return_metrics import (
+from metrics.return_metrics import (
     ad_return_win_pct,
     ad_return_count,
     deuce_return_win_pct,
@@ -114,7 +114,7 @@ def render_return_profile(df, player, opponent):
         deuce_fh_middle_win = deuce_return_win_pct(df, player, "Forehand", "Middle")
         deuce_fh_line_win = deuce_return_win_pct(df, player, "Forehand", "Down Line")
 
-        img = Image.open("deuce_return.png").convert("RGBA")
+        img = Image.open("assets/deuce_return.png").convert("RGBA")
         draw = ImageDraw.Draw(img)
         font = get_font(40)
 
@@ -142,7 +142,7 @@ def render_return_profile(df, player, opponent):
         deuce_bh_middle_win = deuce_return_win_pct(df, player, "Backhand", "Middle")
         deuce_bh_line_win = deuce_return_win_pct(df, player, "Backhand", "Inside In")
 
-        img = Image.open("deuce_return.png").convert("RGBA")
+        img = Image.open("assets/deuce_return.png").convert("RGBA")
         draw = ImageDraw.Draw(img)
         font = get_font(40)
 
@@ -170,7 +170,7 @@ def render_return_profile(df, player, opponent):
         ad_fh_middle_win = ad_return_win_pct(df, player, "Forehand", "Middle")
         ad_fh_inside_in_win = ad_return_win_pct(df, player, "Forehand", "Inside In")
 
-        img = Image.open("ad_return.png").convert("RGBA")
+        img = Image.open("assets/ad_return.png").convert("RGBA")
         draw = ImageDraw.Draw(img)
         font = get_font(40)
 
@@ -198,7 +198,7 @@ def render_return_profile(df, player, opponent):
         ad_bh_middle_win = ad_return_win_pct(df, player, "Backhand", "Middle")
         ad_bh_line_win = ad_return_win_pct(df, player, "Backhand", "Down Line")
 
-        img = Image.open("ad_return.png").convert("RGBA")
+        img = Image.open("assets/ad_return.png").convert("RGBA")
         draw = ImageDraw.Draw(img)
         font = get_font(40)
 

@@ -1,8 +1,7 @@
 import os
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-import altair as alt
+
 from tabs.serve_profile import render_serve_profile
 from tabs.return_profile import render_return_profile
 from tabs.winners_profile import render_winners_profile
