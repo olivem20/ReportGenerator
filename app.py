@@ -9,7 +9,6 @@ from tabs.errors_profile import render_errors_profile
 from tabs.pressure_profile import render_pressure_profile
 from tabs.opponent_profile import render_opponent_profile
 
-
 st.title("Report Generator")
 
 uploaded_file = st.file_uploader("Please upload Match CSV")
@@ -27,38 +26,73 @@ if uploaded_file is not None:
     opponent_school = match_info["Opponent School"]
     location = match_info["Location"]
     date = match_info["Date"]
-
+  
     player_first_name = player.split()[0]
     player_png = f"{player_first_name}.png"
-    image_path = os.path.join("Headhsots", player_png) 
+    image_path = os.path.join("Headshots", player_png) 
+
+    opponent_png = f"{opponent_school}.png"
+    opponent_image_path = os.path.join("School Logos", opponent_png)
+
 
     # Match Winner  
     winner_col = "C1: Who Won Point?" 
     match_winner = df[winner_col].dropna().iloc[-1]
 
-    col1, col2, col3, col4, col5, col6 = st.columns([1,1,3,2,1,1], gap="xxsmall")
-    with col4:
+    # Extract Win Data
+    is_win = str(match_winner).strip().lower() == str(player).strip().lower()
+
+    bubble_color = "#22c55e" if is_win else "#ef4444"   # green if win, red if loss
+    result_text = "WIN" if is_win else "LOSS"
+
+    col1, col2, col3 = st.columns([1,2,1], gap = "large")
+    with col1:
             if os.path.exists(image_path):
                 st.image(image_path, use_container_width=True)
             else:
                 st.write("Headshot not found")
+    with col2:
+        st.markdown(
+            f"""
+            <div style="text-align:center;">
+                <div style="font-size:80px; font-weight:800; margin-bottom:0;">
+                    {player}
+                </div>
+                <div style="font-size:34px; font-weight:800; color:gray; margin-top:-10px; margin-bottom:20px;">
+                    vs {opponent} ({opponent_school})
+                </div>
+                <div style="
+                    display:inline-block;
+                    background-color:{bubble_color};
+                    color:white;
+                    font-size:32px;
+                    font-weight:700;
+                    padding:12px 28px;
+                    border-radius:999px;
+                    margin-bottom:20px;
+                ">
+                    {final_score} • {result_text}
+                </div>
+                <div style="font-size:28px; margin-top:10px; margin-bottom:20px;">
+                    📍 {location} |  📅 {date}
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+
     with col3:
-        ### WRITE INFO ###  
-        st.title(f"***Player:*** {player}", text_alignment="center")
-        st.markdown(f"## ***Final Score:*** {final_score}")
-        st.markdown(f"## ***Opponent:*** {opponent}")
-        st.markdown(f"## ***Opponent School:*** {opponent_school}")
-        st.markdown(f"## ***Match Winner:*** {match_winner}")
-        st.markdown(f"## ***Location:*** {location}")
-        st.markdown(f"## ***Date:*** {date}")
-
-
+            if os.path.exists(image_path):
+                st.image(opponent_image_path, use_container_width=True)
+            else:
+                st.write("Headshot not found")
 
     tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
         "Serve Profile",
         "Return Profile",
-        "Winners",
-        "Errors",
+        "Points Won",
+        "Points Lost",
         "Pressure",
         "Opponent Stats"
     ])
