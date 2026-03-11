@@ -59,7 +59,7 @@ if uploaded_file is not None:
                     {player}
                 </div>
                 <div style="font-size:34px; font-weight:800; color:gray; margin-top:-10px; margin-bottom:20px;">
-                    vs {opponent} ({opponent_school})
+                    vs. {opponent} ({opponent_school})
                 </div>
                 <div style="
                     display:inline-block;

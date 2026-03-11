@@ -70,7 +70,24 @@ def render_serve_profile(df, player):
         deuce_t_2nd = deuce_serves(df, player, "No", "T")
         deuce_t_2nd_win_pct = deuce_serves_win_pct(df, player, "No", "T")
 
-        col1, col2, col3 = st.columns([1,1,1])
+
+
+
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+             st.metric(label="Serve Points Won %", value=f"{service_points_won_pct:.1%}", width="stretch", height="stretch")
+        
+        with col2:
+             st.metric(label="Games Held / Games Broken", value=f"{serve_games_won} / {serve_games_broke}", width="stretch", height="stretch")
+        with col3:
+             st.metric(label="Break Points Faced", value=break_points_total, width="stretch", height="stretch")
+        with col4:
+             st.metric(label="Break Points Saved", value=break_points_won, width="stretch", height="stretch")
+
+
+        col1, col2, col3 = st.columns([1, 3, 3])
+
         ############## SERVE TABLE ##############
         with col1:
             serve_metrics_table = pd.DataFrame(
@@ -92,14 +109,7 @@ def render_serve_profile(df, player):
                 hide_index=True
             )
 
-        with col2:
-            st.subheader(" ")
-            st.metric(label="Serve Points Won %", value=f"{service_points_won_pct:.1%}", width="stretch", height="stretch")
-            st.metric(label="Break Points Faced", value=break_points_total, width="stretch", height="stretch")
-        with col3:
-            st.subheader(" ")
-            st.metric(label="Games Held / Games Broken", value=f"{serve_games_won} / {serve_games_broke}", width="stretch", height="stretch")
-            st.metric(label="Break Points Saved", value=break_points_won, width="stretch", height="stretch")
+            
 
 
         ######################################################################### 
@@ -110,10 +120,7 @@ def render_serve_profile(df, player):
 
         ################ SERVE PLACEMENT ################
 
-
-        col1, col2 = st.columns(2)
-
-        with col1:  
+        with col2:  
             st.header("1st Serve Placement Chart")
             img = Image.open("assets/serve_placement.png").convert("RGBA")
             draw = ImageDraw.Draw(img)
@@ -152,7 +159,7 @@ def render_serve_profile(df, player):
             first_serve_input = st.text_area("Coach's 1st Serve Observations")
             st.write(first_serve_input)
 
-        with col2:
+        with col3:
             st.header("2nd Serve Placement Chart")
             img = Image.open("assets/serve_placement.png").convert("RGBA")
             draw = ImageDraw.Draw(img)
