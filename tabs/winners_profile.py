@@ -10,7 +10,7 @@ def render_winners_profile(df, player):
     ###### Winner Profile ######
     with col1:
         # Only points player won
-        wins = df[df["C1: Who Won Point?"] == player].copy()
+        wins = df[df["C1: Point Winner"] == player].copy()
 
         # Keep rows where there is a winner recorded
         wins = wins[wins["D3: Shot Winner"].notna()]
@@ -49,7 +49,7 @@ def render_winners_profile(df, player):
     
     with col2:
                 # Points where YOU hit the winner (i.e., you won the point)
-        winner_points = df[df["C1: Who Won Point?"] == player].copy()
+        winner_points = df[df["C1: Point Winner"] == player].copy()
 
         # Clean Winner Type
         winner_points["D1: Winner Type"] = winner_points["D1: Winner Type"].astype("string").str.strip()
@@ -100,7 +100,7 @@ def render_winners_profile(df, player):
 
     with col3:
         winners = df[
-            (df["C1: Who Won Point?"] == player) &
+            (df["C1: Point Winner"] == player) &
             (df["D1: Winner Type"].notna())
         ].copy()
 
@@ -151,7 +151,7 @@ def render_winners_profile(df, player):
         st.plotly_chart(fig_bh, use_container_width=True)
 
     with col22:
-        points_won = len(df[df["C1: Who Won Point?"] == player].copy())
+        points_won = len(df[df["C1: Point Winner"] == player].copy())
         points_played = len(df) - 1
 
         points_won_pct = points_won / points_played

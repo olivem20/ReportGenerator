@@ -8,7 +8,7 @@ def render_pressure_profile(df, player):
     deuce_points_played = len(deuce_points)
 
     deuce_points_won = len(
-        deuce_points[deuce_points["C1: Who Won Point?"] == player]
+        deuce_points[deuce_points["C1: Point Winner"] == player]
     )
 
     win_pct = (deuce_points_won / deuce_points_played) * 100 if deuce_points_played > 0 else 0

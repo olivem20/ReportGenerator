@@ -56,10 +56,10 @@ def render_return_profile(df, player, opponent):
         )
 
     with col2:
-        ret = df[df["Returner"] == player].copy()
+        ret = df[df["Server"] != player].copy()
         ret = ret[ret["B4: Return Outcome"].notna()].copy()
         ret["B4: Return Outcome"] = ret["B4: Return Outcome"].astype(str).str.strip()
-        ret["WonPoint"] = (ret["C1: Who Won Point?"] == player)
+        ret["WonPoint"] = (ret["C1: Point Winner"] == player)
 
         outcome = ret["B4: Return Outcome"].value_counts().reset_index()
         outcome.columns = ["Outcome", "Count"]

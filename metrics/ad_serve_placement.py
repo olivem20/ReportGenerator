@@ -68,7 +68,7 @@ def ad_serves_win_pct(df: pd.DataFrame, player_name: str, first_serve: str, serv
             (df["Server"] == player_name) &
             (df["A2: 1st Serve Location"] == serve_location) &
             (df["A1: 1st Serve Made?"] == first_serve) &
-            (df["C1: Who Won Point?"] == player_name) &
+            (df["C1: Point Winner"] == player_name) &
             (is_ad_point)
         ]
     else:
@@ -76,7 +76,7 @@ def ad_serves_win_pct(df: pd.DataFrame, player_name: str, first_serve: str, serv
             (df["Server"] == player_name) &
             (df["A4: 2nd Serve Location"] == serve_location) &
             (df["A1: 1st Serve Made?"] == first_serve) &
-            (df["C1: Who Won Point?"] == player_name) &
+            (df["C1: Point Winner"] == player_name) &
             (is_ad_point)
         ]
 

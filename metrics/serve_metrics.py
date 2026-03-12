@@ -28,7 +28,7 @@ def first_serve_points_won(df: pd.DataFrame, player_name: str) -> float:
         (df["Server"] == player_name) &
         (df["A1: 1st Serve Made?"] == "Yes")
     ]
-    points_won = serves["C1: Who Won Point?"].eq(player_name).sum()
+    points_won = serves["C1: Point Winner"].eq(player_name).sum()
     total_first_serve_points = len(serves)
     return points_won / total_first_serve_points
 
@@ -39,7 +39,7 @@ def second_serve_points_won(df: pd.DataFrame, player_name: str) -> float:
         (df["A1: 1st Serve Made?"] == "No")
     ]
 
-    points_won = serves["C1: Who Won Point?"].eq(player_name).sum()
+    points_won = serves["C1: Point Winner"].eq(player_name).sum()
     total_second_serve_points = len(serves)
     return points_won / total_second_serve_points
 
@@ -73,7 +73,7 @@ def serve_points_won(df: pd.DataFrame, player_name: str) -> float:
     if total_service_points == 0:
         return 0.0
 
-    points_won = serves["C1: Who Won Point?"].eq(player_name).sum()
+    points_won = serves["C1: Point Winner"].eq(player_name).sum()
 
     return points_won / total_service_points
 
@@ -85,7 +85,7 @@ def service_games_held(df: pd.DataFrame, player_name: str) -> int:
 
     holds = serves[
         score.str.startswith("40-") & 
-        (serves["C1: Who Won Point?"] == player_name)
+        (serves["C1: Point Winner"] == player_name)
     ]
     return len(holds)
 
@@ -103,7 +103,7 @@ def service_games_broken(df: pd.DataFrame, player_name: str) -> int:
 
     broken = serves[
         score.isin(["0-40", "15-40", "30-40", "40-40"]) &
-        (serves["C1: Who Won Point?"] != player_name)
+        (serves["C1: Point Winner"] != player_name)
     ]
 
     return len(broken)
@@ -140,7 +140,7 @@ def break_points_saved(df: pd.DataFrame, player_name: str) -> int:
 
     break_points = serves[
         score.isin(["0-40", "15-40", "30-40", "40-40"]) &
-        (serves["C1: Who Won Point?"] == player_name)
+        (serves["C1: Point Winner"] == player_name)
     ]
 
     return len(break_points)

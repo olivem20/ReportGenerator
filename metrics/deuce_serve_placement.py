@@ -70,7 +70,7 @@ def deuce_serves_win_pct(df: pd.DataFrame, player_name: str, first_serve: str, s
             (df["Server"] == player_name) &
             (df["A2: 1st Serve Location"] == serve_location) &
             (df["A1: 1st Serve Made?"] == first_serve) &
-            (df["C1: Who Won Point?"] == player_name) &
+            (df["C1: Point Winner"] == player_name) &
             (base_score.isin(deuce_scores))
         ]
     else:
@@ -78,7 +78,7 @@ def deuce_serves_win_pct(df: pd.DataFrame, player_name: str, first_serve: str, s
             (df["Server"] == player_name) &
             (df["A4: 2nd Serve Location"] == serve_location) &
             (df["A1: 1st Serve Made?"] == first_serve) &
-            (df["C1: Who Won Point?"] == player_name) &
+            (df["C1: Point Winner"] == player_name) &
             (base_score.isin(deuce_scores))
         ]
 

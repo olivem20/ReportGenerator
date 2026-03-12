@@ -10,7 +10,7 @@ def return_count(df: pd.DataFrame, player_name: str) -> int:
 def return_percentage(df: pd.DataFrame, player_name: str, opponent_name: str) -> float:
     returns = df[df["Server"] == opponent_name]
     total_returns = len(returns)
-    returns_won = returns["C1: Who Won Point?"].eq(player_name).sum()
+    returns_won = returns["C1: Point Winner"].eq(player_name).sum()
     return returns_won / total_returns
 
 def first_return_pct(df: pd.DataFrame, player_name: str, opponent_name: str) -> float:
@@ -20,7 +20,7 @@ def first_return_pct(df: pd.DataFrame, player_name: str, opponent_name: str) -> 
         ]
 
     total_returns = len(returns)
-    returns_won = returns["C1: Who Won Point?"].eq(player_name).sum()
+    returns_won = returns["C1: Point Winner"].eq(player_name).sum()
     return returns_won / total_returns
 
 
@@ -28,7 +28,7 @@ def deuce_return_count(df: pd.DataFrame, player_name: str, return_shot: str, ret
     deuce_stroke = df[
         (df["Server"] != player_name) &
         (df["B1: Return Shot"] == return_shot) &
-        (df["B3: Returm Direction"] == return_direction) &
+        (df["B3: Return Direction"] == return_direction) &
         (df["Game Score"].isin(deuce_scores))
     ]
 
@@ -41,8 +41,8 @@ def deuce_return_win_pct(df: pd.DataFrame, player_name: str, return_shot: str, r
     numerator = df[
         (df["Server"] != player_name) &
         (df["B1: Return Shot"] != return_shot) &
-        (df["B3: Returm Direction"] == return_direction) &
-        (df["C1: Who Won Point?"] == player_name) &
+        (df["B3: Return Direction"] == return_direction) &
+        (df["C1: Point Winner"] == player_name) &
         (df["Game Score"].isin(deuce_scores)) 
     ]
 
@@ -52,12 +52,15 @@ def deuce_return_win_pct(df: pd.DataFrame, player_name: str, return_shot: str, r
     denominator = df[
         (df["Server"] != player_name) &
         (df["B1: Return Shot"] == return_shot) &
-        (df["B3: Returm Direction"] == return_direction) &
+        (df["B3: Return Direction"] == return_direction) &
         (df["Game Score"].isin(deuce_scores))
     ]
 
     if "Side" in df.columns:
         denominator &= df["Side"].eq("Deuce")
+
+    if len(denominator) == 0:
+        return 0.0
 
     return len(numerator) / len(denominator)
 
@@ -66,7 +69,7 @@ def ad_return_count(df: pd.DataFrame, player_name: str, return_shot: str, return
     deuce_stroke = df[
         (df["Server"] != player_name) &
         (df["B1: Return Shot"] == return_shot) &
-        (df["B3: Returm Direction"] == return_direction) &
+        (df["B3: Return Direction"] == return_direction) &
         (df["Game Score"].isin(ad_scores))
     ]
 
@@ -79,8 +82,8 @@ def ad_return_win_pct(df: pd.DataFrame, player_name: str, return_shot: str, retu
     numerator = df[
         (df["Server"] != player_name) &
         (df["B1: Return Shot"] == return_shot) &
-        (df["B3: Returm Direction"] == return_direction) &
-        (df["C1: Who Won Point?"] == player_name) &
+        (df["B3: Return Direction"] == return_direction) &
+        (df["C1: Point Winner"] == player_name) &
         (df["Game Score"].isin(ad_scores)) 
     ]
 
@@ -90,7 +93,7 @@ def ad_return_win_pct(df: pd.DataFrame, player_name: str, return_shot: str, retu
     denominator = df[
         (df["Server"] != player_name) &
         (df["B1: Return Shot"] == return_shot) &
-        (df["B3: Returm Direction"] == return_direction) &
+        (df["B3: Return Direction"] == return_direction) &
         (df["Game Score"].isin(deuce_scores))
     ]
 
@@ -114,14 +117,14 @@ def second_return_pct(df: pd.DataFrame, player_name: str, opponent_name: str) ->
         (df["A1: 1st Serve Made?"] == "No")
         ]
     total_returns = len(returns)
-    returns_won = returns["C1: Who Won Point?"].eq(player_name).sum()
+    returns_won = returns["C1: Point Winner"].eq(player_name).sum()
     return returns_won / total_returns
 
 def first_return_errors(df: pd.DataFrame, player_name: str, opponent_name: str) -> int:
     return_errors = df[
         (df["Server"] != player_name) &
         (df["A1: 1st Serve Made?"] == "Yes") &
-        (df["B5: Return Depth"].astype("string").str.lower().isin(["net", "wide", "long"]))
+        (df["B4: Return Outcome"].isin(["Unforced Error", "Forced Error"]))
     ]
     return len(return_errors)
 
@@ -130,7 +133,7 @@ def second_return_errors(df: pd.DataFrame, player_name: str, opponent_name: str)
     return_errors = df[
         (df["Server"] != player_name) &
         (df["A1: 1st Serve Made?"] == "No") &
-        (df["B5: Return Depth"].astype("string").str.lower().isin(["net", "wide", "long"]))
+        (df["B4: Return Outcome"].isin(["Unforced Error", "Forced Error"]))
     ]
     return len(return_errors)
 
@@ -140,7 +143,7 @@ def return_games_won(df: pd.DataFrame, player_name: str) -> int:
     return_games = df[
         (df["Server"] != player_name) &
         (df["Game Score"].isin(break_scores)) & 
-        (df["C1: Who Won Point?"] == player_name)
+        (df["C1: Point Winner"] == player_name)
     ]
     return len(return_games)
 

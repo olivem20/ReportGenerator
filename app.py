@@ -83,7 +83,6 @@ if uploaded_file is not None:
             unsafe_allow_html=True
         )
 
-
     with col3:
             if os.path.exists(image_path):
                 st.image(opponent_image_path, use_container_width=True)

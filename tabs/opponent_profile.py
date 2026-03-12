@@ -13,17 +13,11 @@ def render_opponent_profile(df, player, opponent):
     with col1:
         st.subheader("How opponent won points (Winners + Forced Errors)")
 
-        opp_offense = df[df["C1: Who Won Point?"] == opponent].copy()
-
-        opp_offense = df[
-            (df["C1: Who Won Point?"] == opponent) & 
-            (df["G1: Opp. Winner Shot"].notna())    
-        ].copy()
-
+        opp_offense = df[df["C2: Last Shot Winner"] == opponent].copy()
 
         # Combine Shot + Spin into one label
         opp_offense["Winner Label"] = (
-            opp_offense["G1: Opp. Winner Shot"] + " - " + opp_offense["G2: Opp. Winner Spin"]
+            opp_offense["D3: Shot Winner"] + " - " + opp_offense["D2: Spin Winner"]
         )
 
         winner_counts = (
@@ -49,29 +43,13 @@ def render_opponent_profile(df, player, opponent):
     with col3:
         st.subheader("How Opponent Lost Points (Unforced Errors)")
 
-        opp_errors = df[
-            (df["C1: Who Won Point?"] == player) &
-            (df["E2: Opp. Unforced Error Shot"].notna())
-        ].copy()
+        opp_errors = df[df["C3: Last Shot Unforced Error"] == opponent].copy()
 
-        # Clean columns
-        opp_errors["E2: Opp. Unforced Error Shot"] = (
-            opp_errors["E2: Opp. Unforced Error Shot"]
-            .astype(str)
-            .str.strip()
-        )
-
-        opp_errors["E1: Opp. Unforced Error Spin"] = (
-            opp_errors["E1: Opp. Unforced Error Spin"]
-            .fillna("Unknown")
-            .astype(str)
-            .str.strip()
-        )
 
         # Combine Shot + Spin
         opp_errors["Error Label"] = (
-            opp_errors["E2: Opp. Unforced Error Shot"] + " - " +
-            opp_errors["E1: Opp. Unforced Error Spin"]
+            opp_errors["E2: Shot Error"] + " - " +
+            opp_errors["E3: Spin Error"]
         )
 
         error_counts = (

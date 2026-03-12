@@ -71,56 +71,8 @@ def render_serve_profile(df, player):
         deuce_t_2nd_win_pct = deuce_serves_win_pct(df, player, "No", "T")
 
 
-
-
-        col1, col2, col3, col4 = st.columns(4)
-        
+        col1, col2 = st.columns(2)
         with col1:
-             st.metric(label="Serve Points Won %", value=f"{service_points_won_pct:.1%}", width="stretch", height="stretch")
-        
-        with col2:
-             st.metric(label="Games Held / Games Broken", value=f"{serve_games_won} / {serve_games_broke}", width="stretch", height="stretch")
-        with col3:
-             st.metric(label="Break Points Faced", value=break_points_total, width="stretch", height="stretch")
-        with col4:
-             st.metric(label="Break Points Saved", value=break_points_won, width="stretch", height="stretch")
-
-
-        col1, col2, col3 = st.columns([1, 3, 3])
-
-        ############## SERVE TABLE ##############
-        with col1:
-            serve_metrics_table = pd.DataFrame(
-            [
-                {"Metric": "1st Serve %", "Value": f"{fs_pct:.1%}"},
-                {"Metric": "2nd Serve %", "Value": f"{ss_pct:.1%}"},
-                {"Metric": "1st Serve Points Won %", "Value": f"{fs_points_won:.1%}"},
-                {"Metric": "2nd Serve Points Won %", "Value": f"{ss_points_won:.1%}"},
-                {"Metric": "Aces", "Value": int(aces)},
-                {"Metric": "Service Winners", "Value": int(service_winners_count)},
-                {"Metric": "Double Faults", "Value": int(double_faults)},
-            ]
-            )
-
-            st.subheader("Serve Metrics")
-            st.dataframe(
-                serve_metrics_table,
-                width="stretch",
-                hide_index=True
-            )
-
-            
-
-
-        ######################################################################### 
-        ######################################################################### 
-        ####### ADD BEST SERVE AND LEAST SUCCESSFUL SERVE FOR 1ST AND 2ND #######
-        #########################################################################   
-        ######################################################################### 
-
-        ################ SERVE PLACEMENT ################
-
-        with col2:  
             st.header("1st Serve Placement Chart")
             img = Image.open("assets/serve_placement.png").convert("RGBA")
             draw = ImageDraw.Draw(img)
@@ -156,10 +108,8 @@ def render_serve_profile(df, player):
             draw.text((2110, 100), "Deuce Wide", fill=(0,0,0,255), font=font) #LABEL
 
             st.image(img, use_container_width=True)
-            first_serve_input = st.text_area("Coach's 1st Serve Observations")
-            st.write(first_serve_input)
 
-        with col3:
+        with col2:
             st.header("2nd Serve Placement Chart")
             img = Image.open("assets/serve_placement.png").convert("RGBA")
             draw = ImageDraw.Draw(img)
@@ -198,5 +148,40 @@ def render_serve_profile(df, player):
 
 
             st.image(img, use_container_width=True)
-            second_serve_input = st.text_area("Coach's 2nd Serve Observations")
-            st.write(second_serve_input)
+
+
+
+
+
+        col1, col2, col3 = st.columns([4,2,2])
+
+        ############## SERVE TABLE ##############
+        with col1:
+            serve_metrics_table = pd.DataFrame(
+            [
+                {"Metric": "1st Serve %", "Value": f"{fs_pct:.1%}"},
+                {"Metric": "2nd Serve %", "Value": f"{ss_pct:.1%}"},
+                {"Metric": "1st Serve Points Won %", "Value": f"{fs_points_won:.1%}"},
+                {"Metric": "2nd Serve Points Won %", "Value": f"{ss_points_won:.1%}"},
+                {"Metric": "Aces", "Value": int(aces)},
+                {"Metric": "Service Winners", "Value": int(service_winners_count)},
+                {"Metric": "Double Faults", "Value": int(double_faults)},
+            ]
+            )
+            st.dataframe(
+                serve_metrics_table,
+                width="stretch",
+                hide_index=True
+            )
+
+        with col2:
+            st.metric(label="Serve Points Won %", value=f"{service_points_won_pct:.1%}", width="stretch", height="content", border=True)
+            st.metric(label="Games Held / Games Broken", value=f"{serve_games_won} / {serve_games_broke}", width="stretch", height="content", border=True)
+        with col3:
+            st.metric(label="Break Points Faced", value=break_points_total, width="stretch", height="content", border=True)
+            st.metric(label="Break Points Saved", value=break_points_won, width="stretch", height="content", border=True)
+
+
+        second_serve_input = st.text_area("Coach's Serving Observations")
+        st.write(second_serve_input)
+
