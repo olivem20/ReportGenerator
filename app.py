@@ -21,12 +21,14 @@ if uploaded_file is not None:
     match_info = df.iloc[0]
 
     final_score = match_info["Final Score"]
-    player = match_info["Player"]
-    opponent = match_info["Opponent"]
+    player = match_info["Player Name"]
+    opponent = match_info["Opponent Name"]
     opponent_school = match_info["Opponent School"]
     location = match_info["Location"]
     date = match_info["Date"]
-  
+    singles_line = match_info["Singles Line"]
+    overall_score = match_info["Overall Score"]
+   
     player_first_name = player.split()[0]
     player_png = f"{player_first_name}.png"
     image_path = os.path.join("Headshots", player_png) 
@@ -36,7 +38,7 @@ if uploaded_file is not None:
 
 
     # Match Winner  
-    winner_col = "C1: Who Won Point?" 
+    winner_col = "C1: Point Winner" 
     match_winner = df[winner_col].dropna().iloc[-1]
 
     # Extract Win Data
