@@ -10,7 +10,7 @@ from tabs.pressure_profile import render_pressure_profile
 from tabs.opponent_profile import render_opponent_profile
 
 st.title("Report Generator")
-
+  
 uploaded_file = st.file_uploader("Please upload Match CSV")
 
 if uploaded_file is not None:
@@ -102,7 +102,7 @@ if uploaded_file is not None:
         render_serve_profile(df, player)
        
     with tab2:
-        render_return_profile(df, player, opponent)
+        render_return_profile(df, player)
 
     with tab3:
         render_winners_profile(df, player)
