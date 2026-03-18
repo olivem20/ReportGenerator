@@ -18,8 +18,8 @@ if uploaded_file is not None:
     #st.write(df)
 
     ### EXTRACT NOTES ###
-    match_info = df.iloc[0]
-
+    match_info = df.iloc[0] 
+   
     final_score = match_info["Final Score"]
     player = match_info["Player Name"]
     opponent = match_info["Opponent Name"]
@@ -36,7 +36,7 @@ if uploaded_file is not None:
     opponent_png = f"{opponent_school}.png"
     opponent_image_path = os.path.join("School Logos", opponent_png)
 
-
+ #. 
     # Match Winner  
     winner_col = "C1: Point Winner" 
     match_winner = df[winner_col].dropna().iloc[-1]
@@ -47,7 +47,7 @@ if uploaded_file is not None:
     bubble_color = "#22c55e" if is_win else "#ef4444"   # green if win, red if loss
     result_text = "WIN" if is_win else "LOSS"
 
-    col1, col2, col3 = st.columns([1,2,1], gap = "large")
+    col1, col2, col3 = st.columns([3,4,3], gap = "large")
     with col1:
             if os.path.exists(image_path):
                 st.image(image_path, use_container_width=True)
@@ -114,4 +114,4 @@ if uploaded_file is not None:
         render_pressure_profile(df, player)
     
     with tab6:
-        render_opponent_profile(df, player, opponent)
+        render_opponent_profile(df, player, opponent) 

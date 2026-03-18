@@ -1,104 +1,71 @@
 import pandas as pd
 ## SERVE PLACEMENENT FUNCTIONS ##
 
-def deuce_serves(df: pd.DataFrame, player_name: str, first_serve: str, serve_location: str) -> float:
-    base_score = df["Name"].astype(str).str.split(" ").str[0]
+def deuce_serves_count(df: pd.DataFrame, player_name: str, first_serve: str, serve_location: str) -> float:
     
     deuce_scores = [
         "0-0",
-        "15-15",
-        "30-30",
-        "40-40",
-        "30-0",
         "0-30",
+        "30-0",
+        "15-15",
         "40-15",
-        "15-40"
+        "15-40",
+        "30-30",
     ]
 
-    is_deuce_point = (df["Deuce"] == "Deuce") | (base_score.isin(deuce_scores))
-
-
+    is_deuce_point = (df["Deuce"] == "Deuce") | (df["Game Score"].isin(deuce_scores))  ###### DON"T FORGET TO deuceD TIE BREAKERS HERE
+    
     if first_serve == "Yes":
-        numerator = df[
+        count = df[
             (df["Server"] == player_name) &
             (df["A2: 1st Serve Location"] == serve_location) &
-            (df["A1: 1st Serve Made?"] == first_serve) &
-            (base_score.isin(deuce_scores))
+            (is_deuce_point)
         ]
     else:
-        numerator = df[
+        count = df[
             (df["Server"] == player_name) &
             (df["A4: 2nd Serve Location"] == serve_location) &
-            (df["A1: 1st Serve Made?"] == first_serve) &
-            (base_score.isin(deuce_scores))
+            (is_deuce_point)
         ]
 
-
-
-
-    denominator = df[
-        (df["Server"] == player_name) &
-        (df["A1: 1st Serve Made?"] == first_serve) &
-        (base_score.isin(deuce_scores))
-    ]
-
-    if len(denominator) == 0:
-        return 0.0
-
-    return len(numerator) / len(denominator)
+    return len(count)
 
 
 def deuce_serves_win_pct(df: pd.DataFrame, player_name: str, first_serve: str, serve_location: str) -> float:
-    base_score = df["Name"].astype(str).str.split(" ").str[0]
+    denominator = deuce_serves_count(df, player_name, first_serve, serve_location)
     
     deuce_scores = [
         "0-0",
-        "15-15",
-        "30-30",
-        "40-40",
-        "30-0",
         "0-30",
+        "30-0",
+        "15-15",
         "40-15",
-        "15-40"
+        "15-40",
+        "30-30",
     ]
 
 
-    is_deuce_point = (df["Deuce"] == "Deuce") | (base_score.isin(deuce_scores))
+    is_deuce_point = (df["Deuce"] == "Deuce") | (df["Game Score"].isin(deuce_scores))
 
     if first_serve == "Yes":
         numerator = df[
             (df["Server"] == player_name) &
             (df["A2: 1st Serve Location"] == serve_location) &
-            (df["A1: 1st Serve Made?"] == first_serve) &
+            (df["A1: 1st Serve Made?"] == "Yes") &
             (df["C1: Point Winner"] == player_name) &
-            (base_score.isin(deuce_scores))
+            (is_deuce_point)
         ]
     else:
         numerator = df[
             (df["Server"] == player_name) &
             (df["A4: 2nd Serve Location"] == serve_location) &
-            (df["A1: 1st Serve Made?"] == first_serve) &
+            (df["A3: 2nd Serve Made?"] == "Yes") &
             (df["C1: Point Winner"] == player_name) &
-            (base_score.isin(deuce_scores))
+            (is_deuce_point)
         ]
 
-    if first_serve == "Yes":
-        denominator = df[
-            (df["Server"] == player_name) &
-            (df["A1: 1st Serve Made?"] == first_serve) &
-            (df["A2: 1st Serve Location"] == serve_location) &
-            (base_score.isin(deuce_scores))
-        ]
-    else:
-        denominator = df[
-            (df["Server"] == player_name) &
-            (df["A1: 1st Serve Made?"] == first_serve) &
-            (df["A4: 2nd Serve Location"] == serve_location) &
-            (base_score.isin(deuce_scores))
-        ]
+    if denominator == 0:
+        return 0
 
-    if len(denominator) == 0:
-        return 0.0
-    
-    return len(numerator) / len(denominator)
+    return len(numerator) / denominator
 

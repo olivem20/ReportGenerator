@@ -27,7 +27,7 @@ def render_return_profile(df, player, opponent):
     col5, col6 = st.columns(2)
 
     # Return Points Won Percentage
-    returns = return_percentage(df, player, opponent)
+    returns = return_percentage(df, player)
     first_returns = first_return_pct(df, player, opponent)
     second_returns = second_return_pct(df, player, opponent)
 

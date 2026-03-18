@@ -46,24 +46,24 @@ def second_serve_points_won(df: pd.DataFrame, player_name: str) -> float:
 def num_double_faults(df: pd.DataFrame, player_name: str) -> float:
     serves = df[
         (df["Server"] == player_name) &
-        (df["A3: 2nd Serve Made?"] == "No")
+        (df["E1: Error Type"] == "Double Fault")
     ]
     return len(serves)
 
 def num_aces(df: pd.DataFrame, player_name: str) -> float:
     serves = df[
         (df["Server"] == player_name) &
-        (df["D3: Shot Winner"] == "Serve") &
-        (df["D1: Winner Type"] == "Winner")
+        (df["D1: Winner Type"] == "Ace")
     ]
+
     return len(serves)
 
 def service_winners(df: pd.DataFrame, player_name: str) -> float:
     serves = df[
         (df["Server"] == player_name) &
-        (df["D3: Shot Winner"] == "Serve") &
-        (df["D1: Winner Type"] == "Forced Error") 
+        (df["D1: Winner Type"] == "Service Winner")
     ]
+    
     return len(serves)
 
 def serve_points_won(df: pd.DataFrame, player_name: str) -> float:
