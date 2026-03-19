@@ -93,11 +93,11 @@ if uploaded_file is not None:
         "Serve Profile",
         "Return Profile",
         "Points Won",
-        "Points Lost",
+        "Points Lost", 
         "Pressure",
         "Opponent Stats"
     ])
-
+ 
     with tab1:
         render_serve_profile(df, player)
        

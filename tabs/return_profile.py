@@ -24,9 +24,7 @@ from font import get_font
 def render_return_profile(df, player):
     st.header("Return Profile")
 
-    col1, col2 = st.columns(2)
-    col3, col4 = st.columns(2) 
-    col5, col6 = st.columns(2)
+
  
     # Return Points Won Percentage
     returns = return_percentage(df, player)
@@ -68,35 +66,60 @@ def render_return_profile(df, player):
     ad_fh_middle_win = ad_return_win_pct(df, player, "Forehand", "Middle")
     ad_fh_inside_in_win = ad_return_win_pct(df, player, "Forehand", "Inside In")
 
-    ad_bh_cross = ad_return_count(df, player, "Backhand", "Cross Court")
-    ad_bh_middle = ad_return_count(df, player, "Backhand", "Middle")
-    ad_bh_line = ad_return_count(df, player, "Backhand", "Down Line")
+    k1, k2, k3, k4 = st.columns(4)
 
-    ad_bh_cross_win = ad_return_win_pct(df, player, "Backhand", "Cross Court")
-    ad_bh_middle_win = ad_return_win_pct(df, player, "Backhand", "Middle")
-    ad_bh_line_win = ad_return_win_pct(df, player, "Backhand", "Down Line")
+    with k1:
+        st.metric("Return Pts Won", f"{returns:.1%}")
+
+    with k2:
+        st.metric("1st Return Pts Won", f"{first_returns:.1%}")
+
+    with k3:
+        st.metric("2nd Return Pts Won", f"{second_returns:.1%}")
+
+    with k4:
+        st.metric("Return Games", f"{return_games_won_count}/{return_games_played_count}")
 
 
-    with col1:
-        return_metrics_table = pd.DataFrame(
-            [
-                {"Metric": "% Return Points Won", "Value": f"{returns:.1%}"},
-                {"Metric": "% 1st Serve Return Points Won", "Value": f"{first_returns:.1%}"},
-                {"Metric": "% 2nd Serve Return Points Won", "Value": f"{second_returns:.1%}"},
-                {"Metric": "Return Games Won/Played", "Value": f"{return_games_won_count}/{return_games_played_count}"},
-                {"Metric": "1st Serve Return Errors", "Value": int(first_return_errors_count)},
-                {"Metric": "2nd Serve Return Errors", "Value": int(second_return_errors_count)},
-                {"Metric": "Return Winners", "Value": int(winners)},
-                {"Metric": "Returns that Forced Errors", "Value": int(forced)},
-            ] 
-        )
+    k5, k6, k7, k8 = st.columns(4) 
 
-        st.subheader("Return Metrics")
-        st.dataframe(
-            return_metrics_table,
-            use_container_width=True,
-            hide_index=True
-        )
+    with k5:
+        st.metric("1st Return Errors", int(first_return_errors_count))
+
+    with k6:
+        st.metric("2nd Return Errors", int(second_return_errors_count))
+
+    with k7:
+        st.metric("Return Winners", int(winners))
+
+    with k8:
+        st.metric("Forced Errors", int(forced))
+
+    col1, col2 = st.columns(2)
+    col3, col4 = st.columns(2) 
+    col5, col6 = st.columns(2)
+
+    # with col1:
+    #     return_metrics_table = pd.DataFrame(
+    #         [
+    #             {"Metric": "% Return Points Won", "Value": f"{returns:.1%}"},
+    #             {"Metric": "% 1st Serve Return Points Won", "Value": f"{first_returns:.1%}"},
+    #             {"Metric": "% 2nd Serve Return Points Won", "Value": f"{second_returns:.1%}"},
+    #             {"Metric": "Return Games Won/Played", "Value": f"{return_games_won_count}/{return_games_played_count}"},
+    #             {"Metric": "1st Serve Return Errors", "Value": int(first_return_errors_count)},
+    #             {"Metric": "2nd Serve Return Errors", "Value": int(second_return_errors_count)},
+    #             {"Metric": "Return Winners", "Value": int(winners)},
+    #             {"Metric": "Returns that Forced Errors", "Value": int(forced)},
+    #         ] 
+    #     )
+
+    #     st.subheader("Return Metrics")
+    #     st.dataframe(
+    #         return_metrics_table,
+    #         use_container_width=True,
+    #         hide_index=True
+    #     )
+
 
 
 
@@ -153,7 +176,7 @@ def render_return_profile(df, player):
         ad_fh_inside_out_win = ad_return_win_pct(df, player, "Forehand", "Inside Out")
         ad_fh_middle_win = ad_return_win_pct(df, player, "Forehand", "Middle")
         ad_fh_inside_in_win = ad_return_win_pct(df, player, "Forehand", "Inside In")
-
+ 
         img = Image.open("assets/ad_return.png").convert("RGBA")
         draw = ImageDraw.Draw(img)
         font = get_font(40)
@@ -174,6 +197,13 @@ def render_return_profile(df, player):
         st.image(img, use_container_width=True)
 
     with col6:
+        ad_bh_cross = ad_return_count(df, player, "Backhand", "Cross Court")
+        ad_bh_middle = ad_return_count(df, player, "Backhand", "Middle")
+        ad_bh_line = ad_return_count(df, player, "Backhand", "Down Line")
+
+        ad_bh_cross_win = ad_return_win_pct(df, player, "Backhand", "Cross Court")
+        ad_bh_middle_win = ad_return_win_pct(df, player, "Backhand", "Middle")
+        ad_bh_line_win = ad_return_win_pct(df, player, "Backhand", "Down Line")
 
         img = Image.open("assets/ad_return.png").convert("RGBA")
         draw = ImageDraw.Draw(img)
@@ -201,6 +231,7 @@ def render_return_profile(df, player):
         "add something here about how often opponent attacked certain serves and also "
         "how often they won those points"
     )
+
     st.write(
         "this way we can see if serving was a liability or what not"
     )

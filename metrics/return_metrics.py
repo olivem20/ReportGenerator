@@ -1,7 +1,7 @@
 import pandas as pd
 
-deuce_scores = ["0-0", "15-15", "30-30", "30-0", "0-30", "40-15", "15-40"]
-ad_scores = ["0-15", "15-0", "30-15", "15-30", "40-30", "30-40", "40-0", "0-40"]
+deuce_scores = ["0-0", "15-15", "30-30", "30-0", "0-30", "40-15", "15-40", "40-40"]
+ad_scores = ["0-15", "15-0", "30-15", "15-30", "40-30", "30-40", "40-0", "0-40", "40-40"]
 
 def return_count(df: pd.DataFrame, player_name: str) -> int:
     returns = df[df["Server"] != player_name]
@@ -80,14 +80,13 @@ def ad_return_count(df: pd.DataFrame, player_name: str, return_shot: str, return
         (df["B3: Return Direction"] == return_direction) &
         (df["Game Score"].isin(ad_scores)) &
         (
-            (df["Deuce"] == "Deuce") |
-            (df["Deuce"].isna()) | 
-            (df["Deuce"] == "")
+            (df["Deuce"] == "Ad") | 
+            (df["Deuce"].isna())
         )
     ]
 
 
-    return len(ad_stroke)
+    return len(ad_stroke) 
 
 def ad_return_win_pct(df: pd.DataFrame, player_name: str, return_shot: str, return_direction: str) -> float:
     numerator = df[
@@ -102,17 +101,17 @@ def ad_return_win_pct(df: pd.DataFrame, player_name: str, return_shot: str, retu
             (df["Deuce"] == "")
         )
     ]
+    
 
 
     denominator = df[
         (df["Server"] != player_name) &
         (df["B1: Return Shot"] == return_shot) &
         (df["B3: Return Direction"] == return_direction) &
-        (df["Game Score"].isin(deuce_scores)) &
+        (df["Game Score"].isin(ad_scores)) &
         (
-            (df["Deuce"] == "Ad") |
-            (df["Deuce"].isna()) | 
-            (df["Deuce"] == "")
+            (df["Deuce"] == "Ad") | 
+            (df["Deuce"].isna())
         )
     ]
 
