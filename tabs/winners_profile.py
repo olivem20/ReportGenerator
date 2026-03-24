@@ -4,8 +4,8 @@ import plotly.express as px
    
 def render_winners_profile(df, player):
     st.title("Winner Profile")
-    col1, col2, col22 = st.columns(3) 
-    col3, col4, col5 = st.columns(3) 
+    col1, col2, col3 = st.columns(3) 
+    col4, col5 = st.columns(2) 
     
     ###### Winner Profile ######
     with col1:
@@ -98,7 +98,7 @@ def render_winners_profile(df, player):
         "whether you won the point being offensive or if your opponent made" \
         "an error")
 
-    with col3:
+    with col4:
         winners = df[
             (df["C1: Point Winner"] == player) &
             (df["D1: Winner Type"].notna())
@@ -128,7 +128,7 @@ def render_winners_profile(df, player):
         fig_fh.update_traces(textposition="outside")
         st.plotly_chart(fig_fh, use_container_width=True)
 
-    with col4:
+    with col5:
         # ---- BACKHAND ----
         bh = winners[winners["D3: Shot Winner"] == "Backhand"]
 
@@ -150,15 +150,61 @@ def render_winners_profile(df, player):
         fig_bh.update_traces(textposition="outside")
         st.plotly_chart(fig_bh, use_container_width=True)
 
-    with col22:
-        points_won = len(df[df["C1: Point Winner"] == player].copy())
-        points_played = len(df) - 1
 
-        points_won_pct = points_won / points_played
+    with col3:
+        won_points = df[df["C1: Point Winner"] == player].copy()
 
-        st.metric(label="Points Won / Points Played", value=f"{points_won} / {points_played}", width="stretch")
+        aggressive = won_points[won_points["C2: Last Shot Winner"] == player].shape[0]
+        steady = won_points[
+            (won_points["C3: Last Shot Unforced Error"] != player) &
+            (won_points["C3: Last Shot Unforced Error"].notna())
+        ].shape[0]
+
+        profile = pd.DataFrame({
+            "Style": ["Aggressive", "Steady"],
+            "Count": [aggressive, steady]
+        })
+
+        total = profile["Count"].sum()
+        profile["Percent"] = (
+            profile["Count"] / total * 100
+        ).round(1) if total > 0 else 0
+
+        fig = px.pie(
+            profile,
+            names="Style",
+            values="Count",
+            title="How You Won Points",
+            color="Style",
+            color_discrete_map={
+                "Aggressive": "#98df8a",   # green
+                "Steady": "#df8a8a"        # lighter green
+            }
+        )
+
+        fig.update_traces(
+            textinfo="percent+label",
+            textposition="inside",
+            hole=0.5
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+        st.write(
+            "Aggressive = points you finished with a winning shot. "
+            "Steady = points won because of opponent making an unforced error."
+        )
+
+
+    points_won = len(df[df["C1: Point Winner"] == player].copy())
         
-        st.metric(label="% Points Won", value=f"{points_won_pct:.1%}", width="stretch")
+    points_played = len(df)
 
-        winner_input = st.text_area("Coach's Winner Observations")
-        st.write(winner_input)
+    points_won_pct = points_won / points_played
+
+    st.metric(label="Points Won / Points Played", value=f"{points_won} / {points_played}", width="stretch")
+    
+    st.metric(label="% Points Won", value=f"{points_won_pct:.1%}", width="stretch")
+
+    winner_input = st.text_area("Coach's Winner Observations")
+    st.write(winner_input)

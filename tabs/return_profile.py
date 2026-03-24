@@ -226,12 +226,3 @@ def render_return_profile(df, player):
 
     return_input = st.text_area("Coach's Return Observations")
     st.write(return_input)
-
-    st.write(
-        "add something here about how often opponent attacked certain serves and also "
-        "how often they won those points"
-    )
-
-    st.write(
-        "this way we can see if serving was a liability or what not"
-    )

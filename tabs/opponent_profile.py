@@ -1,11 +1,14 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import altair as alt
+
+from metrics.serve_metrics import opp_serve_count
 
 def render_opponent_profile(df, player, opponent):
     st.header("Opponent Scouting")
 
-    col1, col2, col3, col4 = st.columns([3, 1, 2, 1])
+    col1, col3 = st.columns(2)
 
     # -------------------------
     # 1) Opponent Winners + Forced Errors
@@ -31,14 +34,12 @@ def render_opponent_profile(df, player, opponent):
             winner_counts,
             names="Winner Label",
             values="Count",
-            title="Opponent Winner Distribution (Shot + Spin)",
             color="Winner Label",
             color_discrete_sequence=px.colors.sequential.Greens[::-1]  # optional
         )
 
         fig.update_traces(textinfo="percent+label", textposition="inside")
         st.plotly_chart(fig, use_container_width=True)
-
 
     with col3:
         st.subheader("How Opponent Lost Points (Unforced Errors)")
@@ -64,7 +65,6 @@ def render_opponent_profile(df, player, opponent):
             error_counts,
             names="Error Label",
             values="Count",
-            title="Opponent Unforced Errors (Shot + Spin)",
             color="Error Label",
             color_discrete_sequence=px.colors.sequential.Reds[::-1]
         )
@@ -76,5 +76,35 @@ def render_opponent_profile(df, player, opponent):
 
         st.plotly_chart(fig, use_container_width=True)
     
-    scout_input = st.text_area("Coach's Scouting Observations")
-    st.write(scout_input)
+
+
+
+
+    col1, col2 = st.columns(2)
+    
+
+    with col1:
+        st.subheader("Ad Side Serve Locations")
+
+        ad_serves = opp_serve_count(df, player, "Ad")
+
+        ad_chart = alt.Chart(ad_serves).mark_bar().encode(
+            x=alt.X("Serve Location:N", sort=["Wide", "Body", "T"]),
+            y=alt.Y("Count:Q"),
+            tooltip=["Serve Location", "Count"]
+        )
+
+        st.altair_chart(ad_chart, use_container_width=True)
+ 
+    with col2:
+        st.subheader("Deuce Side Serve Locations")
+
+        deuce_serves = opp_serve_count(df, player, "Deuce")
+
+        deuce_chart = alt.Chart(deuce_serves).mark_bar().encode(
+            x=alt.X("Serve Location:N", sort=["T", "Body", "Wide"]),
+            y=alt.Y("Count:Q"),
+            tooltip=["Serve Location", "Count"]
+        )
+
+        st.altair_chart(deuce_chart, use_container_width=True)

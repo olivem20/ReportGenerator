@@ -10,7 +10,7 @@ from tabs.pressure_profile import render_pressure_profile
 from tabs.opponent_profile import render_opponent_profile
 
 st.title("Report Generator")
-  
+   
 uploaded_file = st.file_uploader("Please upload Match CSV")
 
 if uploaded_file is not None:
@@ -43,9 +43,13 @@ if uploaded_file is not None:
 
     # Extract Win Data
     is_win = str(match_winner).strip().lower() == str(player).strip().lower()
+    is_team_win = int(overall_score[0]) >= 4
 
     bubble_color = "#22c55e" if is_win else "#ef4444"   # green if win, red if loss
     result_text = "WIN" if is_win else "LOSS"
+
+    overall_color = "#22c55e79" if is_win else "#ef44447a"
+    text_color = "#FFFFFF" if is_team_win else "#ffffff"  # darker readable text
 
     col1, col2, col3 = st.columns([3,4,3], gap = "large")
     with col1:
@@ -75,8 +79,27 @@ if uploaded_file is not None:
                 ">
                     {final_score} • {result_text}
                 </div>
-                <div style="font-size:28px; margin-top:10px; margin-bottom:20px;">
+                <div style="
+                    display:block;
+                    margin-top:-10px;
+                    margin-bottom:20px;
+                ">
+                    <span style="
+                        background-color:{overall_color};
+                        color:{text_color};
+                        font-size:18px;
+                        font-weight:700;
+                        padding:8px 20px;
+                        border-radius:999px;
+                    ">
+                        Team Score: {overall_score}
+                    </span>
+                </div>
+                <div style="font-size:28px; margin-top:10px;">
                     📍 {location} |  📅 {date}
+                </div>
+                <div style="font-size:22px; margin-bottom:20px; color:grey;">
+                    Line {singles_line} Singles
                 </div>
             </div>
             """,
@@ -108,10 +131,10 @@ if uploaded_file is not None:
         render_winners_profile(df, player)
 
     with tab4: 
-        render_errors_profile(df, opponent)
+        render_errors_profile(df, player)
         
     with tab5:
         render_pressure_profile(df, player)
     
     with tab6:
-        render_opponent_profile(df, player, opponent) 
+        render_opponent_profile(df, player, opponent)  

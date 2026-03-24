@@ -1,7 +1,38 @@
 import pandas as pd
 import altair as alt
 
+
+deuce_scores = ["0-0", "15-15", "30-30", "30-0", "0-30", "40-15", "15-40"]
+ad_scores = ["0-15", "15-0", "30-15", "15-30", "40-30", "30-40", "40-0", "0-40"]
+
+
 ########## SERVING ##########
+def opp_serve_count(df: pd.DataFrame, player_name: str, side: str) -> pd.DataFrame:
+    serves = df[df["Server"] != player_name].copy()
+
+    if side == "Deuce":
+        serves = serves[
+            (serves["Game Score"].isin(deuce_scores)) |
+            ((serves["Game Score"] == "40-40") & (serves["Deuce"] == "Deuce"))
+        ]
+    elif side == "Ad":
+        serves = serves[
+            (serves["Game Score"].isin(ad_scores)) |
+            ((serves["Game Score"] == "40-40") & (serves["Deuce"] == "Ad"))
+        ]
+
+    counts = (
+        serves["A2: 1st Serve Location"]
+        .value_counts()
+        .reindex(["T", "Wide", "Body"], fill_value=0)
+        .reset_index()
+    )
+
+    counts.columns = ["Serve Location", "Count"]
+    counts["Side"] = side
+
+    return counts
+
 def first_serve_percentage(df: pd.DataFrame, player_name: str) -> float:
     serves = df[df["Server"] == player_name]
     total_first_serves = len(serves)
