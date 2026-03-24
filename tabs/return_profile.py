@@ -169,9 +169,9 @@ def render_return_profile(df, player):
         draw.text((997, 177), str(deuce_fh_middle), fill=(0, 0, 0, 255), font=font)
         draw.text((1265, 177), str(deuce_fh_line), fill=(0, 0, 0, 255), font=font)
 
-        draw.text((695, 282), f"{deuce_fh_cross_win:.1%}", fill=(0, 0, 0, 255), font=font)
-        draw.text((960, 282), f"{deuce_fh_middle_win:.1%}", fill=(0, 0, 0, 255), font=font)
-        draw.text((1220, 282), f"{deuce_fh_line_win:.1%}", fill=(0, 0, 0, 255), font=font)
+        draw.text((680, 285), f"{deuce_fh_cross_win:.1%}", fill=(0, 0, 0, 255), font=font)
+        draw.text((956, 285), f"{deuce_fh_middle_win:.1%}", fill=(0, 0, 0, 255), font=font)
+        draw.text((1210, 285), f"{deuce_fh_line_win:.1%}", fill=(0, 0, 0, 255), font=font)
 
         st.header("Deuce Side Forehand Returns")
         st.image(img, use_container_width=True)
@@ -189,9 +189,9 @@ def render_return_profile(df, player):
         draw.text((997, 177), str(deuce_bh_middle), fill=(0, 0, 0, 255), font=font)
         draw.text((1265, 177), str(deuce_bh_line), fill=(0, 0, 0, 255), font=font)
 
-        draw.text((695, 282), f"{deuce_bh_cross_win:.1%}", fill=(0, 0, 0, 255), font=font)
-        draw.text((960, 282), f"{deuce_bh_middle_win:.1%}", fill=(0, 0, 0, 255), font=font)
-        draw.text((1220, 282), f"{deuce_bh_line_win:.1%}", fill=(0, 0, 0, 255), font=font)
+        draw.text((680, 285), f"{deuce_bh_cross_win:.1%}", fill=(0, 0, 0, 255), font=font)
+        draw.text((956, 285), f"{deuce_bh_middle_win:.1%}", fill=(0, 0, 0, 255), font=font)
+        draw.text((1210, 285), f"{deuce_bh_line_win:.1%}", fill=(0, 0, 0, 255), font=font)
 
         st.header("Deuce Side Backhand Returns")
         st.image(img, use_container_width=True)
@@ -217,9 +217,9 @@ def render_return_profile(df, player):
         draw.text((997, 177), str(ad_fh_middle), fill=(0, 0, 0, 255), font=font)
         draw.text((1265, 177), str(ad_fh_inside_out), fill=(0, 0, 0, 255), font=font)
 
-        draw.text((695, 282), f"{ad_fh_inside_in_win:.1%}", fill=(0, 0, 0, 255), font=font)
-        draw.text((960, 282), f"{ad_fh_middle_win:.1%}", fill=(0, 0, 0, 255), font=font)
-        draw.text((1220, 282), f"{ad_fh_inside_out_win:.1%}", fill=(0, 0, 0, 255), font=font)
+        draw.text((680, 285), f"{ad_fh_inside_in_win:.1%}", fill=(0, 0, 0, 255), font=font)
+        draw.text((955, 285), f"{ad_fh_middle_win:.1%}", fill=(0, 0, 0, 255), font=font)
+        draw.text((1210, 285), f"{ad_fh_inside_out_win:.1%}", fill=(0, 0, 0, 255), font=font)
 
         st.header("Ad Side Forehand Returns")
         st.image(img, use_container_width=True)
@@ -245,9 +245,9 @@ def render_return_profile(df, player):
         draw.text((997, 177), str(ad_bh_middle), fill=(0, 0, 0, 255), font=font)
         draw.text((1265, 177), str(ad_bh_cross), fill=(0, 0, 0, 255), font=font)
 
-        draw.text((695, 282), f"{ad_bh_line_win:.1%}", fill=(0, 0, 0, 255), font=font)
-        draw.text((960, 282), f"{ad_bh_middle_win:.1%}", fill=(0, 0, 0, 255), font=font)
-        draw.text((1220, 282), f"{ad_bh_cross_win:.1%}", fill=(0, 0, 0, 255), font=font)
+        draw.text((680, 285), f"{ad_bh_line_win:.1%}", fill=(0, 0, 0, 255), font=font)
+        draw.text((955, 285), f"{ad_bh_middle_win:.1%}", fill=(0, 0, 0, 255), font=font)
+        draw.text((1210, 285), f"{ad_bh_cross_win:.1%}", fill=(0, 0, 0, 255), font=font)
 
         st.header("Ad Side Backhand Returns")
         st.image(img, use_container_width=True)

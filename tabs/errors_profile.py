@@ -67,7 +67,7 @@ def render_errors_profile(df, player):
             profile,
             names="Style",
             values="Count",
-            title="How You Won Points",
+            title="How You Lost Points",
             subtitle="Player losing points VS. Opponent hitting winners/forcing errors",
             color="Style",
             color_discrete_map={

@@ -162,7 +162,7 @@ def render_serve_profile(df, player):
         draw = ImageDraw.Draw(img)
 
         # If you have a .ttf font file, use it; otherwise PIL default
-        font = get_font(40)
+        font = get_font(35)
         #font = ImageFont.load_default()
 
         draw.text((177, 95), "Key", fill=(0,0,0,255), font=font) #USAGE %
@@ -205,7 +205,7 @@ def render_serve_profile(df, player):
         draw = ImageDraw.Draw(img)
 
         # If you have a .ttf font file, use it; otherwise PIL default
-        font = get_font(40)
+        font = get_font(35)
         #font = ImageFont.load_default()
 
         draw.text((177, 95), "Key", fill=(0,0,0,255), font=font) #USAGE %

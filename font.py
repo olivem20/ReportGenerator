@@ -1,10 +1,15 @@
 from PIL import ImageFont
 import os
-import platform
 
 def get_font(size=40):
-    font_candidates = []
+    # 1. Try bundled font (this is the key fix)
+    local_font = "assets/fonts/Inter_18pt-Bold.ttf"
 
+    if os.path.exists(local_font):
+        return ImageFont.truetype(local_font, size)
+
+    # 2. Fallback to system fonts (your old logic)
+    import platform
     system = platform.system()
 
     if system == "Windows":
@@ -13,16 +18,14 @@ def get_font(size=40):
             r"C:\Windows\Fonts\arialbd.ttf",
             r"C:\Windows\Fonts\arial.ttf",
         ]
-    elif system == "Darwin":  # macOS
+    elif system == "Darwin":
         font_candidates = [
             "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
             "/System/Library/Fonts/Supplemental/Arial.ttf",
-            "/Library/Fonts/Arial.ttf",
         ]
-    else:  # Linux
+    else:
         font_candidates = [
             "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
         ]
 
     for font_path in font_candidates:
