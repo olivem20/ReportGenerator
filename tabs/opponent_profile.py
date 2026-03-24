@@ -14,7 +14,7 @@ def render_opponent_profile(df, player, opponent):
     # 1) Opponent Winners + Forced Errors
     # -------------------------
     with col1:
-        st.subheader("How opponent won points (Winners + Forced Errors)")
+        st.subheader("How opponent won points (Winners + Forcing Errors)")
 
         opp_offense = df[df["C2: Last Shot Winner"] == opponent].copy()
 

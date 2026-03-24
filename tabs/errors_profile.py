@@ -30,6 +30,7 @@ def render_errors_profile(df, player):
             names="Error Label",
             values="Count",
             title="Error Distribution (Shot + Spin)",
+            subtitle="Shot breakdown of all unforced errors",
             color="Error Label",
             color_discrete_sequence=px.colors.sequential.Reds[::-1]
         )
@@ -67,6 +68,7 @@ def render_errors_profile(df, player):
             names="Style",
             values="Count",
             title="How You Won Points",
+            subtitle="Player losing points VS. Opponent hitting winners/forcing errors",
             color="Style",
             color_discrete_map={
                 "Opponent Aggressive": "#98df8a",   # green
@@ -82,10 +84,6 @@ def render_errors_profile(df, player):
 
         st.plotly_chart(fig, use_container_width=True)
 
-        st.write(
-            "Aggressive = points you finished with a winning shot. "
-            "Steady = points won because of opponent making an unforced error."
-        )
 
 
     with col4:
@@ -185,6 +183,7 @@ def render_errors_profile(df, player):
             color="Loss Type",
             text=summary.apply(lambda r: f'{int(r["Count"])} ({r["Percent"]}%)', axis=1),
             title="How You Lost Points",
+            subtitle="Different ways player lost points",
             barmode="stack"
         )
 

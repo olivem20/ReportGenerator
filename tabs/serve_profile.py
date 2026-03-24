@@ -12,6 +12,31 @@ from metrics.deuce_serve_placement import deuce_serves_count, deuce_serves_win_p
 from metrics.ad_serve_placement import ad_serves_count, ad_serves_win_pct
 from font import get_font
 
+def stat_card(title, value, subtitle="", bg="rgba(59, 130, 246, 0.10)", border="#3b82f6"):
+    st.markdown(
+        f"""
+        <div style="
+            background:{bg};
+            border-left:6px solid {border};
+            padding:16px 18px;
+            border-radius:12px;
+            min-height:110px;
+            margin-bottom:12px;
+        ">
+            <div style="font-size:15px; color:white; font-weight:600; margin-bottom:8px;">
+                {title}
+            </div>
+            <div style="font-size:32px; font-weight:800; color:white; line-height:1.1;">
+                {value}
+            </div>
+            <div style="font-size:14px; color:#6b7280; margin-top:8px;">
+                {subtitle}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
 
 def render_serve_profile(df, player):
         ########### PLAYER DATA ###########
@@ -69,6 +94,67 @@ def render_serve_profile(df, player):
         deuce_t_1st_win_pct = deuce_serves_win_pct(df, player, "Yes", "T")
         deuce_t_2nd = deuce_serves_count(df, player, "No", "T")
         deuce_t_2nd_win_pct = deuce_serves_win_pct(df, player, "No", "T")
+
+
+
+        st.header("Serve Summary")
+
+        impact1, impact2, impact3, impact4 = st.columns(4)
+   
+        with impact1:
+            stat_card(
+                "Aces / Service Winners",
+                f"{int(aces)} / {int(service_winners_count)}",
+                "Free points created on serve",
+                bg="rgba(34, 197, 94, 0.10)",
+                border="#16a34a"
+            )
+        with impact2:
+            stat_card(
+                "Double Faults",
+                f"{int(double_faults)}",
+                "Points lost on serve",
+                bg="rgba(239, 68, 68, 0.10)",
+                border="#dc2626"
+            )
+
+        with impact3:
+            saved_pct = (break_points_won / break_points_total) if break_points_total else 0
+            stat_card(
+                "Break Points Saved",
+                f"{break_points_won}/{break_points_total}",
+                f"{saved_pct:.1%} saved" if break_points_total else "No break points faced",
+                bg="rgba(249, 115, 22, 0.10)",
+                border="#ead40c"
+            )
+        with impact4:
+            hold_pct_base = serve_games_won + serve_games_broke
+            hold_pct = (serve_games_won / hold_pct_base) if hold_pct_base else 0
+            stat_card(
+                "Hold Rate",
+                f"{hold_pct:.1%}",
+                f"Held {serve_games_won} of {hold_pct_base} service games" if hold_pct_base else "No service games logged",
+                bg="rgba(99, 102, 241, 0.10)",
+                border="#4f46e5"
+            )
+
+        st.subheader("Serve Stats Detail")
+
+        serve_metrics_table = pd.DataFrame(
+            [
+                {"Metric": "1st Serve %", "Value": f"{fs_pct:.1%}"},
+                {"Metric": "2nd Serve %", "Value": f"{ss_pct:.1%}"},
+                {"Metric": "1st Serve Points Won %", "Value": f"{fs_points_won:.1%}"},
+                {"Metric": "2nd Serve Points Won %", "Value": f"{ss_points_won:.1%}"},
+                {"Metric": "Serve Points Won %", "Value": f"{service_points_won_pct:.1%}"},
+            ]
+        )
+
+        st.dataframe(
+            serve_metrics_table,
+            use_container_width=True,
+            hide_index=True
+        )
 
 
         st.header("1st Serve Placement Chart")
@@ -157,39 +243,4 @@ def render_serve_profile(df, player):
 
         st.image(img, use_container_width=True)
 
-
-
-
-
-        col1, col2, col3 = st.columns([4,2,2])
-
-        ############## SERVE TABLE ##############
-        with col1:
-            serve_metrics_table = pd.DataFrame(
-            [
-                {"Metric": "1st Serve %", "Value": f"{fs_pct:.1%}"},
-                {"Metric": "2nd Serve %", "Value": f"{ss_pct:.1%}"},
-                {"Metric": "1st Serve Points Won %", "Value": f"{fs_points_won:.1%}"},
-                {"Metric": "2nd Serve Points Won %", "Value": f"{ss_points_won:.1%}"},
-                {"Metric": "Aces", "Value": int(aces)},
-                {"Metric": "Service Winners", "Value": int(service_winners_count)},
-                {"Metric": "Double Faults", "Value": int(double_faults)},
-            ]
-            )
-            st.dataframe(
-                serve_metrics_table,
-                width="stretch",
-                hide_index=True
-            )
-
-        with col2:
-            st.metric(label="Serve Points Won %", value=f"{service_points_won_pct:.1%}", width="stretch", height="content", border=True)
-            st.metric(label="Games Held / Games Broken", value=f"{serve_games_won} / {serve_games_broke}", width="stretch", height="content", border=True)
-        with col3:
-            st.metric(label="Break Points Faced", value=break_points_total, width="stretch", height="content", border=True)
-            st.metric(label="Break Points Saved", value=break_points_won, width="stretch", height="content", border=True)
-
-
-        second_serve_input = st.text_area("Coach's Serving Observations")
-        st.write(second_serve_input)
 

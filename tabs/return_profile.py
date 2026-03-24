@@ -20,7 +20,32 @@ from metrics.return_metrics import (
 )
 from font import get_font
 
- 
+def stat_card(title, value, subtitle="", bg="rgba(59, 130, 246, 0.10)", border="#3b82f6"):
+    st.markdown(
+        f"""
+        <div style="
+            background:{bg};
+            border-left:6px solid {border};
+            padding:16px 18px;
+            border-radius:12px;
+            min-height:110px;
+            margin-bottom:12px;
+        ">
+            <div style="font-size:15px; color:white; font-weight:600; margin-bottom:8px;">
+                {title}
+            </div>
+            <div style="font-size:32px; font-weight:800; color:white; line-height:1.1;">
+                {value}
+            </div>
+            <div style="font-size:14px; color:#6b7280; margin-top:8px;">
+                {subtitle}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
 def render_return_profile(df, player):
     st.header("Return Profile")
 
@@ -66,65 +91,68 @@ def render_return_profile(df, player):
     ad_fh_middle_win = ad_return_win_pct(df, player, "Forehand", "Middle")
     ad_fh_inside_in_win = ad_return_win_pct(df, player, "Forehand", "Inside In")
 
-    k1, k2, k3, k4 = st.columns(4)
-
-    with k1:
-        st.metric("Return Pts Won", f"{returns:.1%}")
-
-    with k2:
-        st.metric("1st Return Pts Won", f"{first_returns:.1%}")
-
-    with k3:
-        st.metric("2nd Return Pts Won", f"{second_returns:.1%}")
-
-    with k4:
-        st.metric("Return Games", f"{return_games_won_count}/{return_games_played_count}")
 
 
-    k5, k6, k7, k8 = st.columns(4) 
-
-    with k5:
-        st.metric("1st Return Errors", int(first_return_errors_count))
-
-    with k6:
-        st.metric("2nd Return Errors", int(second_return_errors_count))
-
-    with k7:
-        st.metric("Return Winners", int(winners))
-
-    with k8:
-        st.metric("Forced Errors", int(forced))
-
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns([1,1])
     col3, col4 = st.columns(2) 
     col5, col6 = st.columns(2)
 
-    # with col1:
-    #     return_metrics_table = pd.DataFrame(
-    #         [
-    #             {"Metric": "% Return Points Won", "Value": f"{returns:.1%}"},
-    #             {"Metric": "% 1st Serve Return Points Won", "Value": f"{first_returns:.1%}"},
-    #             {"Metric": "% 2nd Serve Return Points Won", "Value": f"{second_returns:.1%}"},
-    #             {"Metric": "Return Games Won/Played", "Value": f"{return_games_won_count}/{return_games_played_count}"},
-    #             {"Metric": "1st Serve Return Errors", "Value": int(first_return_errors_count)},
-    #             {"Metric": "2nd Serve Return Errors", "Value": int(second_return_errors_count)},
-    #             {"Metric": "Return Winners", "Value": int(winners)},
-    #             {"Metric": "Returns that Forced Errors", "Value": int(forced)},
-    #         ] 
-    #     )
-
-    #     st.subheader("Return Metrics")
-    #     st.dataframe(
-    #         return_metrics_table,
-    #         use_container_width=True,
-    #         hide_index=True
-    #     )
-
-
-
-
     with col2:
-        st.write
+        return_metrics_table = pd.DataFrame(
+            [
+                {"Metric": "% Return Points Won", "Value": f"{returns:.1%}"},
+                {"Metric": "% 1st Serve Return Points Won", "Value": f"{first_returns:.1%}"},
+                {"Metric": "% 2nd Serve Return Points Won", "Value": f"{second_returns:.1%}"},
+                {"Metric": "Return Games Won/Played", "Value": f"{return_games_won_count}/{return_games_played_count}"},
+            ] 
+        )
+
+        st.subheader("Return Metrics")
+        st.dataframe(
+            return_metrics_table,
+            use_container_width=True,
+            hide_index=True,
+            height=272
+        )
+
+    with col1:
+        st.subheader("Return Impact")
+        impact_col1, impact_col2 = st.columns(2)
+        with impact_col2:
+            
+
+            stat_card(
+                "1st Return Errors",
+                f"{int(first_return_errors_count)}",
+                "Missed returns off of first-serve",
+                bg="rgba(239, 68, 68, 0.18)",
+                border="#ef4444"
+            )
+
+            stat_card(
+                "2nd Return Errors",
+                f"{int(second_return_errors_count)}",
+                "Missed returns off of second-serve",
+                bg="rgba(249, 115, 22, 0.18)",
+                border="#f97316"
+            )
+        with impact_col1:
+            stat_card(
+                "Return Winners",
+                f"{int(winners)}",
+                "Clean winners hit on return",
+                bg="rgba(34, 197, 94, 0.18)",
+                border="#22c55e"
+            )
+
+            stat_card(
+                "Forced Errors",
+                f"{int(forced)}",
+                "Returns that forced errors",
+                bg="rgba(59, 130, 246, 0.18)",
+                border="#3b82f6"
+            )
+
 
 
     with col3:
@@ -224,5 +252,3 @@ def render_return_profile(df, player):
         st.header("Ad Side Backhand Returns")
         st.image(img, use_container_width=True)
 
-    return_input = st.text_area("Coach's Return Observations")
-    st.write(return_input)
