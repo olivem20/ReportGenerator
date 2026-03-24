@@ -9,9 +9,14 @@ from tabs.errors_profile import render_errors_profile
 from tabs.pressure_profile import render_pressure_profile
 from tabs.opponent_profile import render_opponent_profile
 
+st.set_page_config(layout="wide")
+
+
 st.title("Report Generator")
    
 uploaded_file = st.file_uploader("Please upload Match CSV")
+
+
 
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
