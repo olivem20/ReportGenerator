@@ -122,7 +122,6 @@ def ad_return_win_pct(df: pd.DataFrame, player_name: str, return_shot: str, retu
     return len(numerator) / len(denominator)
 
 
-
 def second_return_pct(df: pd.DataFrame, player_name: str) -> float:
     returns = df[
         (df["Server"] != player_name) &
@@ -136,7 +135,7 @@ def first_return_errors(df: pd.DataFrame, player_name: str) -> int:
     return_errors = df[
         (df["Server"] != player_name) &
         (df["A1: 1st Serve Made?"] == "Yes") &
-        (df["B4: Return Outcome"].isin(["Unforced Error", "Forced Error"]))
+        (df["E2: Shot Error"].isin(["Forehand Return", "Backhand Return"]))
     ]
     return len(return_errors)
 
@@ -145,8 +144,8 @@ def second_return_errors(df: pd.DataFrame, player_name: str) -> int:
     return_errors = df[
         (df["Server"] != player_name) &
         (df["A1: 1st Serve Made?"] == "No") &
-        (df["B4: Return Outcome"].isin(["Unforced Error", "Forced Error"]))
-    ]
+        (df["E2: Shot Error"].isin(["Forehand Return", "Backhand Return"]))
+    ] 
     return len(return_errors)
 
 def return_games_won(df: pd.DataFrame, player_name: str) -> int:
@@ -169,12 +168,18 @@ def return_games_played(df: pd.DataFrame, player_name: str) -> int:
 
 def forced_errors_w_return(df: pd.DataFrame, player_name: str) -> int:
     returns = df[df["Server"] != player_name]
-    forced = returns[returns["B4: Return Outcome"] == "Forced Error"]
+    forced = returns[
+        (returns["D1: Winner Type"] == "Forcing Error") & 
+        (df["D3: Shot Winner"].isin(["Forehand Return", "Backhand Return"]))
+        ]
     return len(forced)
 
 def return_winners(df: pd.DataFrame, player_name: str) -> int:
     returns = df[df["Server"] != player_name]
-    winners = returns[returns["B4: Return Outcome"] == "Winner"]
+    winners = returns[
+        (returns["D1: Winner Type"] == "Winner") & 
+        (df["D3: Shot Winner"].isin(["Forehand Return", "Backhand Return"]))
+        ]
     return len(winners)
 
 
