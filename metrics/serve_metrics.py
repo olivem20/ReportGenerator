@@ -5,20 +5,37 @@ import altair as alt
 deuce_scores = ["0-0", "15-15", "30-30", "30-0", "0-30", "40-15", "15-40"]
 ad_scores = ["0-15", "15-0", "30-15", "15-30", "40-30", "30-40", "40-0", "0-40"]
 
+def get_tb_ad_mask(df):
+    tb = df["Tiebreaker Score"].fillna("")
+    return tb.apply(lambda x: "-" in x and (int(x.split("-")[0]) + int(x.split("-")[1])) % 2 == 1)
+
+def get_tb_deuce_mask(df):
+    tb = df["Tiebreaker Score"].fillna("")
+    return tb.apply(lambda x: "-" in x and (int(x.split("-")[0]) + int(x.split("-")[1])) % 2 == 0)
 
 ########## SERVING ##########
 def opp_serve_count(df: pd.DataFrame, player_name: str, side: str) -> pd.DataFrame:
     serves = df[df["Server"] != player_name].copy()
 
+    is_tb_ad = get_tb_ad_mask(serves)
+    is_tb_deuce = get_tb_deuce_mask(serves)
+
     if side == "Deuce":
         serves = serves[
-            (serves["Game Score"].isin(deuce_scores)) |
-            ((serves["Game Score"] == "40-40") & (serves["Deuce"] == "Deuce"))
+            (
+                (serves["Game Score"].isin(deuce_scores)) |
+                ((serves["Game Score"] == "40-40") & (serves["Deuce"] == "Deuce"))
+            ) |
+            (is_tb_deuce)
         ]
+
     elif side == "Ad":
         serves = serves[
-            (serves["Game Score"].isin(ad_scores)) |
-            ((serves["Game Score"] == "40-40") & (serves["Deuce"] == "Ad"))
+            (
+                (serves["Game Score"].isin(ad_scores)) |
+                ((serves["Game Score"] == "40-40") & (serves["Deuce"] == "Ad"))
+            ) |
+            (is_tb_ad)
         ]
 
     counts = (
