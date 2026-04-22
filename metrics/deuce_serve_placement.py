@@ -14,11 +14,15 @@ def deuce_serves_count(df: pd.DataFrame, player_name: str, first_serve: str, ser
     ]
 
     tb_parts = df["Tiebreaker Score"].fillna("").str.split("-", expand=True)
-    is_tb_deuce = (
-        tb_parts[0].ne("") &
-        (((tb_parts[0].astype(int) + tb_parts[1].astype(int)) % 2) == 0)
-    )
 
+    left_score = pd.to_numeric(tb_parts[0], errors="coerce")
+    right_score = pd.to_numeric(tb_parts[1], errors="coerce")
+
+    is_tb_deuce = (
+        left_score.notna() &
+        right_score.notna() &
+        (((left_score + right_score) % 2) == 0)
+    )
     is_deuce_point = (df["Deuce"] == "Deuce") | (df["Game Score"].isin(deuce_scores) | is_tb_deuce)  ###### DON"T FORGET TO deuceD TIE BREAKERS HERE
     
     if first_serve == "Yes":

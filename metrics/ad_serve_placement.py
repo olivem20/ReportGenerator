@@ -14,7 +14,18 @@ def ad_serves_count(df: pd.DataFrame, player_name: str, first_serve: str, serve_
         "30-15",
     ]
 
-    is_ad_point = (df["Deuce"] == "Ad") | (df["Game Score"].isin(ad_scores))  ###### DON"T FORGET TO ADD TIE BREAKERS HERE
+    tb_parts = df["Tiebreaker Score"].fillna("").str.split("-", expand=True)
+
+    left_score = pd.to_numeric(tb_parts[0], errors="coerce")
+    right_score = pd.to_numeric(tb_parts[1], errors="coerce")
+
+    is_tb_ad = (
+        left_score.notna() &
+        right_score.notna() &
+        (((left_score + right_score) % 2) == 1)
+    )
+
+    is_ad_point = (df["Deuce"] == "Ad") | (df["Game Score"].isin(ad_scores) | is_tb_ad)  ###### DON"T FORGET TO ADD TIE BREAKERS HERE
     
     if first_serve == "Yes":
         count = df[
