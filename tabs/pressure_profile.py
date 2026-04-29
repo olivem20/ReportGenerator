@@ -114,8 +114,12 @@ def render_pressure_profile(df, player):
                     shot = "&nbsp;"
                     spin = ""
                 else:
+                    player_won = str(winner).strip().lower() == str(player).strip().lower()
                     if end_type == "Unforced Error":
-                        end_type = "Opponent Unforced Error"
+                        if player_won:
+                            end_type = "Opponent Unforced Error"
+                        else:
+                            end_type = "Unforced Error"
                     shot = clean_value(row.get("E2: Shot Error"))
                     spin = clean_value(row.get("E3: Spin Error"))
 
