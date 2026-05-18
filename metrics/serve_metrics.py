@@ -145,3 +145,20 @@ def break_points_saved(df: pd.DataFrame, player_name: str) -> int:
     ]
 
     return len(break_points)
+
+def opp_serve_count(df, opponent, side):
+    serve_col = "A2: 1st Serve Location"
+
+    serves = df[
+        (df["Server"] == opponent) &
+        (df["Side"] == side)
+    ]
+
+    return (
+        serves[serve_col]
+        .dropna()
+        .value_counts()
+        .reindex(["T", "Body", "Wide"], fill_value=0)
+        .reset_index()
+        .rename(columns={"index": "Serve Location", serve_col: "Count"})
+    )

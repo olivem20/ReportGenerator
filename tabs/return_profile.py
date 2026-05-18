@@ -203,14 +203,6 @@ def render_return_profile(df, player):
         st.image(img, use_container_width=True)
 
     with col5:
-        ad_fh_inside_out = return_count(df, player, "Forehand", "Inside Out")
-        ad_fh_middle = return_count(df, player, "Forehand", "Middle")
-        ad_fh_inside_in = return_count(df, player, "Forehand", "Inside In")
-
-        ad_fh_inside_out_win = return_win_pct(df, player, "Forehand", "Inside Out")
-        ad_fh_middle_win = return_win_pct(df, player, "Forehand", "Middle")
-        ad_fh_inside_in_win = return_win_pct(df, player, "Forehand", "Inside In")
- 
         img = Image.open("assets/ad_return.png").convert("RGBA")
         draw = ImageDraw.Draw(img)
         font = get_font(40)
@@ -231,13 +223,13 @@ def render_return_profile(df, player):
         st.image(img, use_container_width=True)
 
     with col6:
-        ad_bh_cross = return_count(df, player, "Backhand", "Cross Court")
-        ad_bh_middle = return_count(df, player, "Backhand", "Middle")
-        ad_bh_line = return_count(df, player, "Backhand", "Down Line")
+        ad_bh_cross = return_count(df, player, "Backhand", "Cross Court", "Ad")
+        ad_bh_middle = return_count(df, player, "Backhand", "Middle", "Ad")
+        ad_bh_line = return_count(df, player, "Backhand", "Down Line", "Ad")
 
-        ad_bh_cross_win = return_win_pct(df, player, "Backhand", "Cross Court")
-        ad_bh_middle_win = return_win_pct(df, player, "Backhand", "Middle")
-        ad_bh_line_win = return_win_pct(df, player, "Backhand", "Down Line")
+        ad_bh_cross_win = return_win_pct(df, player, "Backhand", "Cross Court", "Ad")
+        ad_bh_middle_win = return_win_pct(df, player, "Backhand", "Middle", "Ad")
+        ad_bh_line_win = return_win_pct(df, player, "Backhand", "Down Line", "Ad")
 
         img = Image.open("assets/ad_return.png").convert("RGBA")
         draw = ImageDraw.Draw(img)

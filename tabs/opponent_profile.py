@@ -86,7 +86,7 @@ def render_opponent_profile(df, player, opponent):
     with col1:
         st.subheader("Ad Side Serve Locations")
 
-        ad_serves = opp_serve_count(df, player, "Ad")
+        ad_serves = opp_serve_count(df, opponent, "Ad")
 
         ad_chart = alt.Chart(ad_serves).mark_bar().encode(
             x=alt.X("Serve Location:N", sort=["Wide", "Body", "T"]),
@@ -99,7 +99,7 @@ def render_opponent_profile(df, player, opponent):
     with col2:
         st.subheader("Deuce Side Serve Locations")
 
-        deuce_serves = opp_serve_count(df, player, "Deuce")
+        deuce_serves = opp_serve_count(df, opponent, "Deuce")
 
         deuce_chart = alt.Chart(deuce_serves).mark_bar().encode(
             x=alt.X("Serve Location:N", sort=["T", "Body", "Wide"]),
