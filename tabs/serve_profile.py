@@ -8,8 +8,8 @@ from metrics.serve_metrics import (
     serve_points_won, first_serve_points_won, second_serve_points_won,
     num_double_faults, num_aces, service_games_held
 )
-from metrics.deuce_serve_placement import deuce_serves_count, deuce_serves_win_pct
-from metrics.ad_serve_placement import ad_serves_count, ad_serves_win_pct
+from metrics.serve_placement import serve_count, serve_win_pct
+
 from font import get_font
 
 def stat_card(title, value, subtitle="", bg="rgba(59, 130, 246, 0.10)", border="#3b82f6"):
@@ -64,37 +64,36 @@ def render_serve_profile(df, player):
         service_winners_count = service_winners(df, player)
 
         ######## AD STATS ########
-        ad_wide_1st = ad_serves_count(df, player, "Yes", "Wide")
-        ad_wide_1st_win_pct = ad_serves_win_pct(df, player, "Yes", "Wide")
-        ad_wide_2nd = ad_serves_count(df, player, "No", "Wide")
-        ad_wide_2nd_win_pct = ad_serves_win_pct(df, player, "No", "Wide")
+        ad_wide_1st = serve_count(df, player, "Yes", "Wide", "Ad")
+        ad_wide_1st_win_pct = serve_win_pct(df, player, "Yes", "Wide", "Ad")
+        ad_wide_2nd = serve_count(df, player, "No", "Wide", "Ad")
+        ad_wide_2nd_win_pct = serve_win_pct(df, player, "No", "Wide", "Ad")
         
-        ad_body_1st = ad_serves_count(df, player, "Yes", "Body")
-        ad_body_1st_win_pct = ad_serves_win_pct(df, player, "Yes", "Body")
-        ad_body_2nd = ad_serves_count(df, player, "No", "Body")
-        ad_body_2nd_win_pct = ad_serves_win_pct(df, player, "No", "Body")
+        ad_body_1st = serve_count(df, player, "Yes", "Body", "Ad")
+        ad_body_1st_win_pct = serve_win_pct(df, player, "Yes", "Body", "Ad")
+        ad_body_2nd = serve_count(df, player, "No", "Body", "Ad")
+        ad_body_2nd_win_pct = serve_win_pct(df, player, "No", "Body", "Ad")
         
-        ad_t_1st = ad_serves_count(df, player, "Yes", "T")
-        ad_t_1st_win_pct = ad_serves_win_pct(df, player, "Yes", "T")
-        ad_t_2nd = ad_serves_count(df, player, "No", "T")
-        ad_t_2nd_win_pct = ad_serves_win_pct(df, player, "No", "T")
+        ad_t_1st = serve_count(df, player, "Yes", "T", "Ad")
+        ad_t_1st_win_pct = serve_win_pct(df, player, "Yes", "T", "Ad")
+        ad_t_2nd = serve_count(df, player, "No", "T", "Ad")
+        ad_t_2nd_win_pct = serve_win_pct(df, player, "No", "T", "Ad")
 
         ######## DEUCE STATS ########
-        deuce_wide_1st = deuce_serves_count(df, player, "Yes", "Wide")
-        deuce_wide_1st_win_pct = deuce_serves_win_pct(df, player, "Yes", "Wide")
-        deuce_wide_2nd = deuce_serves_count(df, player, "No", "Wide")
-        deuce_wide_2nd_win_pct = deuce_serves_win_pct(df, player, "No", "Wide")
+        deuce_wide_1st = serve_count(df, player, "Yes", "Wide", "Deuce")
+        deuce_wide_1st_win_pct = serve_win_pct(df, player, "Yes", "Wide", "Deuce")
+        deuce_wide_2nd = serve_count(df, player, "No", "Wide", "Deuce")
+        deuce_wide_2nd_win_pct = serve_win_pct(df, player, "No", "Wide", "Deuce")
         
-        deuce_body_1st = deuce_serves_count(df, player, "Yes", "Body")
-        deuce_body_1st_win_pct = deuce_serves_win_pct(df, player, "Yes", "Body")
-        deuce_body_2nd = deuce_serves_count(df, player, "No", "Body")
-        deuce_body_2nd_win_pct = deuce_serves_win_pct(df, player, "No", "Body")
+        deuce_body_1st = serve_count(df, player, "Yes", "Body", "Deuce")
+        deuce_body_1st_win_pct = serve_win_pct(df, player, "Yes", "Body", "Deuce")
+        deuce_body_2nd = serve_count(df, player, "No", "Body", "Deuce")
+        deuce_body_2nd_win_pct = serve_win_pct(df, player, "No", "Body", "Deuce")
         
-        deuce_t_1st = deuce_serves_count(df, player, "Yes", "T")
-        deuce_t_1st_win_pct = deuce_serves_win_pct(df, player, "Yes", "T")
-        deuce_t_2nd = deuce_serves_count(df, player, "No", "T")
-        deuce_t_2nd_win_pct = deuce_serves_win_pct(df, player, "No", "T")
-
+        deuce_t_1st = serve_count(df, player, "Yes", "T", "Deuce")
+        deuce_t_1st_win_pct = serve_win_pct(df, player, "Yes", "T", "Deuce")
+        deuce_t_2nd = serve_count(df, player, "No", "T", "Deuce")
+        deuce_t_2nd_win_pct = serve_win_pct(df, player, "No", "T", "Deuce")
 
 
         st.header("Serve Summary")
